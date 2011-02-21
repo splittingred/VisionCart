@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+/*
+ * visionCart
+ * Copyright 2010 by 1-vision.
+ * http://www.1-vision.nl
+ * http://www.visioncart.net
+ * All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place, Suite 330, Boston, MA 02111-1307 USA
+ */
+ -->
+<!-- The following xPDO model represents an object-relational map structure of visionCart -->
+<model package="visioncart" baseClass="xPDOObject" platform="mysql" defaultEngine="MyISAM" phpdoc-package="" phpdoc-subpackage="">
+    <object class="vcShop" table="visioncart_shops" extends="xPDOSimpleObject">
+    	<!-- This table holds all the shops (just the names and the config -->
+		<field key="name" dbtype="varchar" precision="50" phptype="string" null="false" default="" />
+		<field key="alias" dbtype="varchar" precision="50" phptype="string" null="false" default="" index="index" />
+		<field key="description" dbtype="text" phptype="string" null="false" default="" />
+		<field key="config" dbtype="text" phptype="json" null="false" default="" />
+		<field key="context" dbtype="varchar" phptype="string" precision="100" null="false" default="" />
+		<field key="active" dbtype="tinyint" precision="1" attributes="unsigned" phptype="boolean" null="false" default="0" />
+		
+		<composite alias="Category" class="vcCategory" local="id" foreign="shopid" cardinality="many" owner="local" />
+		<composite alias="Product" class="vcProduct" local="id" foreign="shopid" cardinality="many" owner="local" />
+		<composite alias="Option" class="vcOption" local="id" foreign="shopid" cardinality="many" owner="local" />
+		<composite alias="OptionValue" class="vcOptionValue" local="id" foreign="shopid" cardinality="many" owner="local" />
+		<composite alias="Order" class="vcOrder" local="id" foreign="shopid" cardinality="many" owner="local" />
+    </object>
+    
+    <object class="vcCategory" table="visioncart_categories" extends="xPDOSimpleObject">
+    	<!-- This table holds all the categories for the products and its settings -->
+    	<field key="shopid" dbtype="int" phptype="integer" precision="8" null="false" default="" />
+		<field key="name" dbtype="varchar" precision="50" phptype="string" null="false" default="" />
+		<field key="alias" dbtype="varchar" precision="50" phptype="string" null="false" default="" index="index" />
+		<field key="description" dbtype="text" phptype="string" null="false" default="" />
+		<field key="parent" dbtype="int" phptype="integer" precision="8" null="false" default="" />
+		<field key="sort" dbtype="int" phptype="integer" precision="8" null="false" default="" />
+		<field key="config" dbtype="text" phptype="json" null="false" default="" />
+		<field key="customfields" dbtype="text" phptype="json" null="false" default="" />
+		<field key="pricechange" dbtype="decimal" precision="8,2" phptype="float" null="false" default="" />
+		<field key="pricepercent" dbtype="tinyint" precision="1" attributes="unsigned" phptype="boolean" null="false" default="0" />
+		<field key="active" dbtype="tinyint" precision="1" attributes="unsigned" phptype="boolean" null="false" default="0" />
+	
+		<composite alias="ProductCategory" class="vcProductCategory" local="id" foreign="categoryid" cardinality="many" owner="local" />
+		<aggregate alias="Shop" class="vcShop" local="shopid" foreign="id" cardinality="one" owner="foreign" />
+    </object>
+    
+    <object class="vcProductCategory" table="visioncart_products_categories" extends="xPDOSimpleObject">
+    	<!-- This table holds the links between categories and products -->
+    	<field key="shopid" dbtype="int" phptype="integer" precision="8" null="false" default="" />
+    	<field key="categoryid" dbtype="int" phptype="integer" precision="8" null="false" default="" index="index" />
+    	<field key="productid" dbtype="int" phptype="integer" precision="8" null="false" default="" index="index" />
+    	<field key="sort" dbtype="int" phptype="integer" precision="8" null="false" default="" />
+    	
+    	<aggregate alias="Product" class="vcProduct" local="productid" foreign="id" cardinality="one" owner="foreign" />
+    	<aggregate alias="Shop" class="vcShop" local="shopid" foreign="id" cardinality="one" owner="foreign" />
+    	<aggregate alias="Category" class="vcCategory" local="categoryid" foreign="id" cardinality="one" owner="foreign" />
+    </object>
+    
+    <object class="vcProduct" table="visioncart_products" extends="xPDOSimpleObject">
+    	<!-- This table holds all the products and its settings -->
+    	<field key="shopid" dbtype="int" phptype="integer" precision="8" null="false" default="" />
+    	<field key="parent" dbtype="int" phptype="integer" precision="8" null="false" default="" />
+    	<field key="taxcategory" dbtype="int" phptype="integer" precision="8" null="false" default="" />
+		<field key="name" dbtype="varchar" precision="100" phptype="string" null="false" default="" />
+		<field key="alias" dbtype="varchar" precision="100" phptype="string" null="false" default="" index="index" />
+		<field key="description" dbtype="text" phptype="string" null="false" default="" />
+		<field key="articlenumber" dbtype="varchar" precision="100" phptype="string" null="false" default="" index="index" />
+		<field key="price" dbtype="decimal" precision="8,2" phptype="float" null="false" default="" index="index" />
+		<field key="weight" dbtype="decimal" precision="8,2" phptype="float" null="false" default="" />
+		<field key="shippingprice" dbtype="decimal" precision="8,2" phptype="float" null="false" default="" />
+		<field key="publishdate" dbtype="int" precision="20" phptype="timestamp" null="false" default="0" index="index" />
+        <field key="unpublishdate" dbtype="int" precision="20" phptype="timestamp" null="false" default="0" index="index" />
+		<field key="customfields" dbtype="text" phptype="json" null="false" default="" />
+		<field key="pictures" dbtype="text" phptype="json" null="false" default="" />
+		<field key="stock" dbtype="int" phptype="integer" precision="8" null="false" default="" />
+		<field key="active" dbtype="tinyint" precision="1" attributes="unsigned" phptype="integer" null="false" default="0" />
+
+		<composite alias="ProductOption" class="vcProductOption" local="id" foreign="productid" cardinality="many" owner="local" />
+		<composite alias="ProductCategory" class="vcProductCategory" local="id" foreign="productid" cardinality="many" owner="local" /> 
+		<aggregate alias="TaxCategory" class="vcCategory" local="taxcategory" foreign="id" cardinality="one" owner="foreign" />
+		<aggregate alias="Shop" class="vcShop" local="shopid" foreign="id" cardinality="one" owner="foreign" />
+    </object>
+    
+    <object class="vcOption" table="visioncart_options" extends="xPDOSimpleObject">
+    	<!-- This table holds all the options names -->
+    	<field key="shopid" dbtype="int" phptype="integer" precision="8" null="false" default="" />
+    	<field key="name" dbtype="varchar" precision="100" phptype="string" null="false" default="" index="index" />
+    	<field key="inputsnippet" dbtype="varchar" precision="50" phptype="string" null="false" default="" />
+    	<field key="outputsnippet" dbtype="varchar" precision="50" phptype="string" null="false" default="" />
+    	
+    	<composite alias="OptionValue" class="vcOptionValue" local="id" foreign="optionid" cardinality="many" owner="local" />
+    	<composite alias="ProductOption" class="vcProductOption" local="id" foreign="optionid" cardinality="many" owner="local" />
+    	<aggregate alias="Shop" class="vcShop" local="shopid" foreign="id" cardinality="one" owner="foreign" />
+    </object>
+    
+    <object class="vcOptionValue" table="visioncart_options_values" extends="xPDOSimpleObject">
+    	<!-- This table holds all the option values -->
+    	<field key="shopid" dbtype="int" phptype="integer" precision="8" null="false" default="" />
+    	<field key="optionid" dbtype="int" phptype="integer" precision="8" null="false" default="" index="index" />
+    	<field key="value" dbtype="text" phptype="string" null="false" default="" />
+
+    	<composite alias="Product" class="vcProductOption" local="id" foreign="valueid" cardinality="many" owner="local" />
+    	<aggregate alias="Shop" class="vcShop" local="shopid" foreign="id" cardinality="one" owner="foreign" />
+    	<aggregate alias="Option" class="vcOption" local="optionid" foreign="id" cardinality="one" owner="foreign" />
+    </object>
+
+    <object class="vcProductOption" table="visioncart_products_options" extends="xPDOSimpleObject">
+    	<!-- This table holds all the option/value links to the products -->
+    	<field key="productid" dbtype="int" phptype="integer" precision="10" null="false" default="" index="index" />
+    	<field key="optionid" dbtype="int" phptype="integer" precision="10" null="false" default="" index="index" />
+    	<field key="valueid" dbtype="int" precision="10" phptype="integer" null="false" default="" />
+    	<field key="sort" dbtype="int" precision="2" phptype="integer" null="false" default="" />
+    	
+    	<aggregate alias="Product" class="vcProduct" local="productid" foreign="id" cardinality="one" owner="foreign" />
+    	<aggregate alias="Option" class="vcOption" local="optionid" foreign="id" cardinality="one" owner="foreign" />
+    	<aggregate alias="OptionValue" class="vcOptionValue" local="valueid" foreign="id" cardinality="one" owner="foreign" />
+    </object>
+    
+    <object class="vcModule" table="visioncart_modules" extends="xPDOSimpleObject">
+    	<!-- This table holds extension modules for visionCart (payment, shipping and more) -->
+    	<field key="type" dbtype="varchar" precision="15" phptype="string" null="false" default="" />
+    	<field key="name" dbtype="varchar" precision="50" phptype="string" null="false" default="" />
+    	<field key="description" dbtype="text" phptype="string" null="false" default="" />
+    	<field key="controller" dbtype="varchar" precision="255" phptype="string" null="false" default="" />
+    	<field key="config" dbtype="text" phptype="json" null="false" default="" />
+    	<field key="active" dbtype="tinyint" precision="1" attributes="unsigned" phptype="boolean" null="false" default="0" />
+    </object>
+    
+    <object class="vcOrder" table="visioncart_orders" extends="xPDOSimpleObject">
+    	<!-- This table holds all the orders made on the website including ALL it's data -->
+    	<field key="shopid" dbtype="int" phptype="integer" precision="8" null="false" default="" />
+    	<field key="userid" dbtype="int" phptype="integer" precision="8" null="false" default="" />
+    	<field key="userdata" dbtype="text" phptype="json" null="false" default="" />
+    	<field key="ordernumber" dbtype="varchar" phptype="string" precision="30" null="false" default="" />
+    	<field key="basket" dbtype="text" phptype="json" null="false" default="" />
+    	<field key="basketid" dbtype="varchar" phptype="string" precision="40" null="false" default="" />
+    	<field key="extradata" dbtype="text" phptype="json" null="false" default="" />
+    	
+    	<field key="shippingid" dbtype="int" phptype="integer" precision="8" null="false" default="" />
+    	<field key="shippingcostsex" dbtype="decimal" precision="8,2" phptype="float" null="false" default="" /> 
+    	<field key="shippingcostsin" dbtype="decimal" precision="8,2" phptype="float" null="false" default="" />
+    	<field key="shippingdata" dbtype="text" phptype="json" null="false" default="" />
+    	
+    	<field key="paymentid" dbtype="int" phptype="integer" precision="8" null="false" default="" />
+    	<field key="paymentcostsex" dbtype="decimal" precision="8,2" phptype="float" null="false" default="" />
+    	<field key="paymentcostsin" dbtype="decimal" precision="8,2" phptype="float" null="false" default="" />
+    	<field key="paymentdata" dbtype="text" phptype="json" null="false" default="" />
+    	
+    	<field key="totalweight" dbtype="decimal" precision="8,2" phptype="float" null="false" default="" />
+    	
+    	<field key="totalproductamountex" dbtype="decimal" precision="8,2" phptype="float" null="false" default="" />
+    	<field key="totalproductamountin" dbtype="decimal" precision="8,2" phptype="float" null="false" default="" /> 
+    	<field key="totalorderamountin" dbtype="decimal" precision="8,2" phptype="float" null="false" default="" />
+    	<field key="totalorderamountex" dbtype="decimal" precision="8,2" phptype="float" null="false" default="" />
+    	
+    	<field key="paidamount" dbtype="decimal" precision="8,2" phptype="float" null="false" default="" />
+    	<field key="ordertime" dbtype="int" precision="20" phptype="timestamp" null="false" default="0" index="index" />
+    	<field key="updatedby" dbtype="int" phptype="integer" precision="8" null="false" default="" />
+    	<field key="updatetime" dbtype="int" precision="20" phptype="timestamp" null="false" default="0" index="index" />
+    	<field key="status" dbtype="int" phptype="integer" precision="1" null="false" default="" />
+    	
+    	<aggregate alias="Shop" class="vcShop" local="shopid" foreign="id" cardinality="one" owner="foreign" />
+    	<aggregate alias="PaymentModule" class="vcModule" local="paymentid" foreign="id" cardinality="one" owner="foreign" /> 
+    	<aggregate alias="ShippingModule" class="vcModule" local="shippingid" foreign="id" cardinality="one" owner="foreign" />
+    </object>
+</model>

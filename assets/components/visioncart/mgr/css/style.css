@@ -1,0 +1,189 @@
+/* Visioncart styles */
+
+.product-image {
+	float: left;
+	padding: 5px;
+	margin: 10px;
+	border: 1px solid #CCCCCC;
+}
+
+/*!
+ * Ext JS Library 3.2.1
+ * Copyright(c) 2006-2010 Ext JS, Inc.
+ * licensing@extjs.com
+ * http://www.extjs.com/license
+ */
+/*
+ * FileUploadField component styles
+ */
+.x-form-file-wrap {
+    position: relative;
+    height: 22px;
+}
+.x-form-file-wrap .x-form-file {
+	position: absolute;
+	right: 0;
+	-moz-opacity: 0;
+	filter:alpha(opacity: 0);
+	opacity: 0;
+	z-index: 2;
+    height: 22px;
+}
+.x-form-file-wrap .x-form-file-btn {
+	position: absolute;
+	right: 0;
+	z-index: 1;
+}
+.x-form-file-wrap .x-form-file-text {
+    position: absolute;
+    left: 0;
+    z-index: 3;
+    color: #777;
+}
+
+/*!
+ * Ext JS Library 3.3.0
+ * Copyright(c) 2006-2010 Ext JS, Inc.
+ * licensing@extjs.com
+ * http://www.extjs.com/license
+ */
+.x-treegrid-root-table {
+    border-right: 1px solid;
+}
+
+.x-treegrid-root-node {
+    overflow: auto;
+}
+
+.x-treegrid-hd-hidden {
+    visibility: hidden;
+    border: 0;
+    width: 0;
+}
+
+.x-treegrid-col {
+    border-bottom: 1px solid;
+    height: 20px;
+    overflow: hidden;
+    vertical-align: top;
+	-o-text-overflow: ellipsis;
+	text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.x-treegrid-text {
+    padding-left: 4px;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+}
+
+.x-treegrid-resizer {
+    border-left:1px solid;
+    border-right:1px solid;
+    position:absolute;
+    left:0;
+    top:0;
+}
+
+.x-treegrid-header-inner {
+    overflow: hidden;
+}
+
+.x-treegrid-root-table,
+.x-treegrid-col {
+    border-color: #ededed;
+}
+
+.x-treegrid-resizer {
+    border-left-color:#555;
+    border-right-color:#555;
+}
+
+/* ViewOrder page styling */
+
+.vc-maintable,
+.vc-maintable table {
+	border-collapse: collapse;
+	border: 0;
+	width: 100%;
+}
+
+.vc-maintable td {
+	vertical-align: top;
+	padding: 5px;
+	font-family: Verdana;
+	font-size: 11px;
+}
+
+
+.vc-th {
+	background: #555;
+	color: #fff;
+	text-indent: 5px;
+	border: 1px solid #555;
+	font-size: 11px;
+	text-align: left;
+}
+
+.vc-productstable td {
+	border: 1px solid black;
+}
+
+.vc-notes {
+	border: 1px solid black;
+}
+
+.vc-totals table td{
+	width: 25%;
+}
+
+.vc-nopadding td{
+	padding: 0;
+	border: 0;
+}
+
+.vc-alignright {
+	text-align: right;
+}
+
+.vc-grid-current td {
+	font-weight: bold !important;
+	font-style: italic;
+}
+
+.vc-inactive a span {
+	font-style: italic !important;
+}
+
+.vc-sku-details td {
+	font-size: 10px;
+	padding: 2px !important;
+}
+
+.vc-lock {
+	width: 16px;
+	height: 16px;
+	background-image: url(../images/lock.png);
+}
+
+.vc-ajax-loading {
+	background-image: url(../images/ajax-loader.gif);
+	background-repeat: no-repeat;
+	display: block;
+	float: left;
+	height: 32px;
+	padding-left: 40px;
+	line-height: 34px;
+}
+
+.vc-ajax-haze {
+	position: absolute;
+	top: -800px;
+	left: -800px;
+	width: 8000px;
+	height: 4000px;
+	z-index: 10;
+	background-color: black;
+	opacity: 0.5;
+	display: none;
+}
