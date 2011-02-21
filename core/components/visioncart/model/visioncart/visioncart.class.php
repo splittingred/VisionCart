@@ -828,17 +828,24 @@ class VisionCart {
     		$shop = $this->modx->getObject('vcShop', $config['shopId']);
     		$shop = $shop->toArray();	
     	}
-    	
+		
     	$config['currency'] = $this->modx->getOption('currency', $config, $shop['config']['currency']);
-    	$config['decimalSeparator'] = $this->modx->getOption('decimalSeparator', $shop['config'], ',');
-    	$config['thousandsSeparator'] = $this->modx->getOption('thousandsSeparator', $shop['config'], '');
-    	
-    	if ($config['currency'] != '') {
-    		$money = $config['currency'].' '.number_format($amount, 2, $config['decimalSeparator'], $config['thousandsSeparator']); 
+		    	
+    	if (!isset($config['format'])) {
+	    	$config['decimalSeparator'] = $this->modx->getOption('decimalSeparator', $shop['config'], ',');
+	    	$config['thousandsSeparator'] = $this->modx->getOption('thousandsSeparator', $shop['config'], '');
+	    	if ($config['currency'] != '') {
+    			$money = $config['currency'].' '.number_format($amount, 2, $config['decimalSeparator'], $config['thousandsSeparator']); 
+	    	} else {
+	    		$money = number_format($amount, 2, $config['decimalSeparator'], $config['thousandsSeparator']);	
+	    	}
     	} else {
-    		$money = number_format($amount, 2, $config['decimalSeparator'], $config['thousandsSeparator']);	
+    		$amount = explode('.', (string) number_format($amount, 2, '.', ''));
+    		$money = str_replace('{currency}', $config['currency'], $config['format']);
+    		$money = str_replace('{amount}', $amount[0], $money);
+    		$money = str_replace('{cents}', $amount[1], $money);
     	}
-    	
+
 		return $money;	
     }
     
@@ -3127,6 +3134,8 @@ class VisionCart {
     	$input = array('<br>', '<hr>');
     	$output = array('<br />', '<hr />');
     	$content = str_replace($input, $output, $content);
+    	
+    	$content = strip_tags($content, '<a><b><i><u><h1><h2><h3><h4><h5><p><pre><div><br>');
     	
     	return $content;
     }
