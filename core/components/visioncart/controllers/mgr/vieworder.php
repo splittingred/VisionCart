@@ -16,6 +16,7 @@ $modx->regClientStartupHTMLBlock('<script type="text/javascript">var vcOrder = '
 
 $vc =& $modx->visioncart;
 $vc->shop = $modx->getObject('vcShop', $order->get('shopid'));
+$shop =& $vc->shop;
 
 $scriptProperties = $vc->getConfigFile($order->get('shopid'), 'orderView', null, array('context' => 'mgr'));
 

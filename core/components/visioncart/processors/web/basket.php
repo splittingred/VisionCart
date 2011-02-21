@@ -25,9 +25,17 @@ $vc =& $modx->visioncart;
 $scriptProperties['config'] = $modx->getOption('config', $scriptProperties, 'default');
 $config = $vc->getConfigFile($vc->shop->get('id'), 'getBasket', null, array('config' => $scriptProperties['config']));
 $basket = $vc->getBasket(false);
- 
+
+$allowedRequestVars = array('basketAction', 'return', 'product', 'products');
+$requestVars = array();
+foreach($_REQUEST as $key => $value) {
+	if (in_array($key, $allowedRequestVars)) {
+		$requestVars[$key] = $value;	
+	}	
+}
+
 // Receive script properties
-$scriptProperties = array_merge($config, $scriptProperties);
+$scriptProperties = array_merge($config, $requestVars, $scriptProperties);
 $scriptProperties['basketAction'] = strtolower($modx->getOption('basketAction', $scriptProperties, ''));
 $scriptProperties['return'] = $modx->getOption('return', $scriptProperties, 'tpl');
 $scriptProperties['outerTpl'] = $modx->getOption('outerTpl', $scriptProperties, '');

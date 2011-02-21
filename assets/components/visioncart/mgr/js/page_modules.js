@@ -473,7 +473,6 @@ var vcPageModules = Ext.extend(Ext.Panel, {
 										fontFamily: 'Verdana'
 									},
 									fontFamilies: [
-										'Verdana'
 									],
 									plugins: [
 										new Ext.ux.form.HtmlEditor.Formatblock()

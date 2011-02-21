@@ -698,7 +698,6 @@ var vcPageProduct = Ext.extend(Ext.Panel, {
 										fontFamily: 'Verdana'
 									},
 									fontFamilies: [
-										'Verdana'
 									],
 									plugins: [
 										new Ext.ux.form.HtmlEditor.Formatblock()
@@ -1163,7 +1162,6 @@ var vcPageProduct = Ext.extend(Ext.Panel, {
 									allowBlank: allowBlank,
 									fieldLabel: item.fieldLabel,
 									fontFamilies: [
-										'Verdana'
 									],
 									plugins: [
 										new Ext.ux.form.HtmlEditor.Formatblock()

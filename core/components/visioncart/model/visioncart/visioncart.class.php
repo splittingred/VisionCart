@@ -630,7 +630,7 @@ class VisionCart {
 			'attachments' => array($orderPdf)
 		));		
 		
-		if (isset($templFile)) {
+		if (isset($tempFile)) {
 			@unlink($tempFile);
 		}
 		
@@ -2484,8 +2484,8 @@ class VisionCart {
 		
 		foreach($stack as $category) {
 			// Skip the tax category
-			if ($category->get('id') == $this->getShopSetting('taxesCategory', $config['shopId'])) {
-				continue;	
+			if ($category->get('id') == $this->getShopSetting('taxesCategory', $shopId)) {
+				continue;
 			}
 			
 			if ($config['asArray'] == true) {

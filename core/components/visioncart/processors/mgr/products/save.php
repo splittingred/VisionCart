@@ -18,7 +18,7 @@ $visionCart->fireEvent('vcEventProduct', 'onBeforeSave', array(
 $optionArray = json_decode($_REQUEST['formData'], true);
 
 // Get extra config array
-$extraInfo = $product->get('customFields');
+$extraInfo = $product->get('customfields');
 foreach($optionArray as $key => $value) {
 	if (substr($key, 0, 12) == 'extraconfig_') {
 		$value = $modx->visioncart->cleanExt($value);
@@ -34,13 +34,13 @@ foreach($optionArray as $key => $value) {
 }
 
 $product->fromArray(array(
-	'shopid' => (int) $_REQUEST['shopId'],
+	'shopid' => (int) $_REQUEST['shopId'], 
 	'taxcategory' => (int) $optionArray['taxcategory'],
 	'name' => $optionArray['name'],
 	'alias' => $optionArray['alias'],
 	'description' => $modx->visioncart->cleanExt($optionArray['description']),
 	'articlenumber' => $optionArray['articlenumber'],
-	'price' => $optionArray['price'],
+	'price' => str_replace(',', '.', $optionArray['price']),
 	'weight' => $optionArray['weight'],
 	'shippingprice' => $optionArray['shippingprice'],
 	'publishdate' => strtotime($optionArray['publishdate']),
