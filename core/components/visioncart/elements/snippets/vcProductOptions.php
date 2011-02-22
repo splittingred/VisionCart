@@ -4,7 +4,8 @@
  */
 $vc =& $modx->visioncart;
 
-$config = $vc->getConfigFile($vc->shop->get('id'), 'getProductOptions');
+$scriptProperties['config'] = $modx->getOption('config', $scriptProperties, 'default');
+$config = $vc->getConfigFile($vc->shop->get('id'), 'getProductOptions', null, array('config' => $scriptProperties['config']));
 $scriptProperties = array_merge($config, $scriptProperties);
 
 $scriptProperties['tpl'] = $modx->getOption('tpl', $scriptProperties, '');
@@ -161,11 +162,16 @@ foreach($optionArray as $optionId => $optionValues) {
 	}*/
 	$selectedValue = isset($scriptProperties['selectedValues'][$optionId]) ? $scriptProperties['selectedValues'][$optionId] == '' ? '0' : $scriptProperties['selectedValues'][$optionId] : '0';
 	
-	$returnValue = $modx->runSnippet($option->get('outputsnippet'), array(
-		'option' => $option->toArray(),
-		'values' => $optionValues,
-		'selectedValue' => $selectedValue
-	));
+	$snippet = $modx->getObject('modSnippet', $option->get('outputsnippet'));
+	if ($snippet == null) {
+		$returnValue = '';
+	} else {
+		$returnValue = $modx->runSnippet($snippet->get('name'), array(
+			'option' => $option->toArray(),
+			'values' => $optionValues,
+			'selectedValue' => $selectedValue
+		));
+	}
 	
 	// JSON response
 	$returnArray['html'][] = array(

@@ -14,7 +14,8 @@ if ($order == null) {
 	exit();
 }
 
-$scriptProperties = array_merge($vc->getConfigFile($order->get('shopid'), 'orderView'), $scriptProperties);
+$scriptProperties['config'] = $modx->getOption('config', $scriptProperties, 'default');
+$scriptProperties = array_merge($vc->getConfigFile($order->get('shopid'), 'orderView', null, array('config' => $scriptProperties['config'])), $scriptProperties);
 
 foreach($order->get('basket') as $product) {
 	$productObject = $modx->getObject('vcProduct', $product['id']);

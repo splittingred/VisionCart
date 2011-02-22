@@ -9,7 +9,8 @@ if (!isset($scriptProperties['id']) || !is_numeric($scriptProperties['id'])) {
 	return;
 }
 
-$config = $vc->getConfigFile($vc->shop->get('id'), 'getProductImages');
+$scriptProperties['config'] = $modx->getOption('config', $scriptProperties, 'default');
+$config = $vc->getConfigFile($vc->shop->get('id'), 'getProductImages', null, array('config' => $scriptProperties['config']));
 $scriptProperties = array_merge($config, $scriptProperties);
 
 $scriptProperties['rel'] = $modx->getOption('rel', $scriptProperties, '');

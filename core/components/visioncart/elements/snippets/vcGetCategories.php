@@ -3,11 +3,6 @@
  * @package visioncart
  */
 
-if (!isset($modx->visioncart)) {
-    $modx->addPackage('visioncart', $modx->getOption('core_path').'components/visioncart/model/');
-    $modx->visioncart = $modx->getService('visioncart', 'VisionCart', $modx->getOption('core_path').'components/visioncart/model/visioncart/');
-}
-
 $vc =& $modx->visioncart;
 $categories = array();
 $output = '';
@@ -16,7 +11,8 @@ if ($modx->visioncart->shop != null) {
 	$shopId = $modx->visioncart->shop->get('id');	
 }
 
-$config = $vc->getConfigFile($vc->shop->get('id'), 'getCategories');
+$scriptProperties['config'] = $modx->getOption('config', $scriptProperties, 'default');
+$config = $vc->getConfigFile($vc->shop->get('id'), 'getCategories', null, array('config' => $scriptProperties['config']));
 $scriptProperties = array_merge($config, $scriptProperties);
 
 $scriptProperties['parents'] = $modx->getOption('parents', $scriptProperties, 0);

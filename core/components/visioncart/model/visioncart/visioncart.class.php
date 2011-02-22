@@ -14,6 +14,7 @@ class VisionCart {
 	public $placeholders = array(); //Set private after dev
 	public $domPdf = null;
 	public $logLevel = 0; // 0 = no logging, 1 = log critical errors, 2 = log notices and errors
+	public $devMode = true;
 	
 	public $shop;
 	public $category;
@@ -71,24 +72,11 @@ class VisionCart {
             'connectorUrl' => $path['assets'].'components/visioncart/connector.php'
         ), $config);
         
-        /*// Put all VisionCart snippets into the snippets folder, dev only!
+        // Put all VisionCart snippets into the snippets folder, dev only!
         $snippets = $this->modx->getCollection('modSnippet', array(
 			'name:LIKE' => 'vc%'
 		));
 		
-		foreach($snippets as $snippet) {
-			file_put_contents($this->config['basePath'].'elements/snippets/'.$snippet->get('name').'.php', '<?php'."\n".$snippet->get('snippet'));
-		}
-		
-		// Put all VisionCart chunks into the chunk folder, dev only!
-		$chunks = $this->modx->getCollection('modChunk', array(
-			'name:LIKE' => 'vc%'
-		));
-		
-		foreach($chunks as $chunk) {
-			file_put_contents($this->config['basePath'].'elements/chunks/'.$chunk->get('name').'.tpl', $chunk->get('snippet'));
-		}*/
-        
 		unset($modx, $path, $settings, $setting, $query, $stack, $shopId, $shop);
 
 		if (isset($this->config['context']) && $this->config['context'] != '') {
@@ -102,6 +90,32 @@ class VisionCart {
 		if ($this->modx->context->get('key') == 'mgr') {
 			$this->modx->addPackage('visioncart', $this->config['modelPath']);	
 		}
+		
+		if ($this->devMode) {
+			$this->writeElements();	
+		}
+    }
+    
+    /**
+     * writeElements
+     * Write snippets and chunks to elements folder
+     *
+     * @access private
+     * @return void
+     */
+    private function writeElements() {
+    	foreach($snippets as $snippet) {
+			file_put_contents($this->config['basePath'].'elements/snippets/'.$snippet->get('name').'.php', '<?php'."\n".$snippet->get('snippet'));
+		}
+		
+		// Put all VisionCart chunks into the chunk folder, dev only!
+		$chunks = $this->modx->getCollection('modChunk', array(
+			'name:LIKE' => 'vc%'
+		));
+		
+		foreach($chunks as $chunk) {
+			file_put_contents($this->config['basePath'].'elements/chunks/'.$chunk->get('name').'.tpl', $chunk->get('snippet'));
+		}	
     }
     
     /**

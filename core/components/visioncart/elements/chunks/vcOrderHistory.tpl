@@ -1,1 +1,0 @@
-<p>Order number <a href="[[+link]]">[[+ordernumber]]</a> | [[+ordertime]] | [[+display.products]] products, total [[+totalamountin:vcCurrency]]</p>

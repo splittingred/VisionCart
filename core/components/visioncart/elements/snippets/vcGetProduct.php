@@ -4,7 +4,9 @@
  */
  
 $vc =& $modx->visioncart;
-$config = $vc->getConfigFile($vc->shop->get('id'), 'getProduct');
+
+$scriptProperties['config'] = $modx->getOption('config', $scriptProperties, 'default');
+$config = $vc->getConfigFile($vc->shop->get('id'), 'getProduct', null, array('config' => $scriptProperties['config']));
 
 $scriptProperties = array_merge($config, $scriptProperties);
 $scriptProperties['category'] = $modx->getOption('category', $scriptProperties, 0);

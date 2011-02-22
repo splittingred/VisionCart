@@ -5,7 +5,8 @@
 
 $vc =& $modx->visioncart;
 
-$config = $vc->getConfigFile($vc->shop->get('id'), 'getCategory');
+$scriptProperties['config'] = $modx->getOption('config', $scriptProperties, 'default');
+$config = $vc->getConfigFile($vc->shop->get('id'), 'getCategory', null, array('config' => $scriptProperties['config']));
 $scriptProperties = array_merge($config, $scriptProperties);
 
 if (!isset($scriptProperties['tpl']) || $scriptProperties['tpl'] == '') {

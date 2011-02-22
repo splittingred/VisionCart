@@ -3,10 +3,6 @@
  * @package visioncart
  */
 
-$timer = array(
-	'start' => microtime(),
-	'end' => 0
-);
 if (!isset($scriptProperties['id'])) {
 	return;	
 }
@@ -34,7 +30,8 @@ $pagination = array(
 	'page' => 1
 );
 
-$config = $vc->getConfigFile($scriptProperties['shopId'], 'getCategoryProducts');
+$scriptProperties['config'] = $modx->getOption('config', $scriptProperties, 'default');
+$config = $vc->getConfigFile($scriptProperties['shopId'], 'getCategoryProducts', null, array('config' => $scriptProperties['config']));
 $scriptProperties = array_merge($config, $scriptProperties);
 
 // Configuration
@@ -148,13 +145,6 @@ $pagination['items'] = $products['total'];
 $pagination['pages'] = ceil($pagination['items'] / $scriptProperties['limit']);
 $products = $products['data'];
 
-/*if ($scriptProperties['offset'] + $scriptProperties['limit']  >= count($products)) {
-	$products = array_slice($products, count($products) - $scriptProperties['limit'], $scriptProperties['limit']);
-} else {
-	$products = array_slice($products, $scriptProperties['offset'], $scriptProperties['limit']);
-}*/
-//$products = array_slice($products, $scriptProperties['offset'], $scriptProperties['limit']);
-
 if (empty($products)) {
 	return 'There are no products in this category';
 }
@@ -255,7 +245,4 @@ $modx->toPlaceholders(array(
 	)
 ));
 
-$timer['end'] = microtime();
-$timer['total'] = ($timer['end'] - $timer['start']);
-
-return $output['master'].$timer['total'];
+return $output['master'];

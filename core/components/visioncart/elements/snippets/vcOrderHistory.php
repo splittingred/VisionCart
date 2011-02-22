@@ -6,7 +6,8 @@
 $vc =& $modx->visioncart;
 
 $scriptProperties['viewOrderResource'] = $modx->getOption('viewOrderResource', $scriptProperties, 0);
-$scriptProperties = array_merge($vc->getConfigFile($vc->shop->get('id'), 'orderHistory'), $scriptProperties);
+$scriptProperties['config'] = $modx->getOption('config', $scriptProperties, 'default');
+$scriptProperties = array_merge($vc->getConfigFile($vc->shop->get('id'), 'orderHistory', null, array('config' => $scriptProperties['config'])), $scriptProperties);
 
 $cache = '';
 $output = '';
