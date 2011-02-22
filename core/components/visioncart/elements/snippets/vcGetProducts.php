@@ -22,6 +22,7 @@ $scriptProperties['hideInactive'] = $modx->getOption('hideInactive', $scriptProp
 $scriptProperties['includeContent'] = $modx->getOption('includeContent', $scriptProperties, 0);
 $scriptProperties['hideSKU'] = $modx->getOption('hideSKU', $scriptProperties, true);
 $scriptProperties['exclude'] = $modx->getOption('exclude', $scriptProperties, '');
+$scriptProperties['scheme'] = $modx->getOption('scheme', $scriptProperties, -1);
 
 // Sorting settings
 $scriptProperties['sort'] = $modx->getOption('sort', $scriptProperties, 'ASC');
@@ -106,7 +107,8 @@ foreach($scriptProperties['parents'] as $parent) {
             
             $product->set('url', $vc->makeUrl(array(
                 'productCategory' => $product->get('linkId'),
-                'shopId' => $product->get('shopid')
+                'shopId' => $product->get('shopid'),
+                'scheme' => $scriptProperties['scheme']
             )));
             
             $priceData = $vc->calculateProductPrice($product, true);

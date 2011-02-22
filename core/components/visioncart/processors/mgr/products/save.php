@@ -33,6 +33,12 @@ foreach($optionArray as $key => $value) {
 	}
 }
 
+if ($optionArray['emptyCache'] == true) {
+	$modx->runProcessor('clearCache', array(), array(
+		'location' => 'system'
+	));
+}
+
 $product->fromArray(array(
 	'shopid' => (int) $_REQUEST['shopId'], 
 	'taxcategory' => (int) $optionArray['taxcategory'],

@@ -92,6 +92,12 @@ if ($shippingUpdated) {
 	}	
 }
 
+if ($shopConfig['emptyCache'] == true) {
+	$modx->runProcessor('clearCache', array(), array(
+		'location' => 'system'
+	));
+}
+
 if (isset($shopConfig['id']) && !empty($shopConfig['id']) && $shopConfig['id'] != 0) {
 	// Apparently we are updating instead of creating a new shop
 	$shop = $modx->getObject('vcShop', $shopConfig['id']);

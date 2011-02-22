@@ -10,6 +10,7 @@ $config = $vc->getConfigFile($vc->shop->get('id'), 'getProduct', null, array('co
 
 $scriptProperties = array_merge($config, $scriptProperties);
 $scriptProperties['category'] = $modx->getOption('category', $scriptProperties, 0);
+$scriptProperties['scheme'] = $modx->getOption('scheme', $scriptProperties, -1);
 
 // Load the product
 if (isset($scriptProperties['id'])) {
@@ -33,7 +34,8 @@ if ($scriptProperties['category'] != 0) {
 	
 	// Add the product URL for reference
 	$product->set('url', $vc->makeUrl(array(
-		'productCategory' => $link->get('id')
+		'productCategory' => $link->get('id'),
+		'scheme' => $scriptProperties['scheme']
 	)));
 }
 

@@ -441,6 +441,12 @@ var vcPageCategories = Ext.extend(Ext.Panel, {
 										},
 										{
 											xtype: 'checkbox',
+											name: 'emptyCache',
+											fieldLabel: 'Empty cache',
+											checked: true
+										},
+										{
+											xtype: 'checkbox',
 											fieldLabel: 'Active',
 											name: 'active'
 										}
@@ -893,10 +899,61 @@ var vcPageCategories = Ext.extend(Ext.Panel, {
 						});
 		    		}	
 		    	},
+		    	load: {
+		    		scope: this,
+		    		fn: function(node) {
+		    			if (node.attributes.id == 'category:0|parent:0') {
+							Ext.each(cookie, function(item, key) {
+								this.categoryTree.expandPath(item);
+							}, this);
+		    			}
+		    		}
+		    	},
 		    	expandnode: {
 		    		scope: this,
 		    		fn: function(node) { 
 		    			this.categoryTreeSorter.doSort(node);
+		    			var nodePath = node.getPath();
+		    			var cookie = Ext.util.Cookies.get('categoryTree');
+		    			if (!cookie) {
+		    				var cookie = new Array();
+		    			} else {
+		    				cookie = Ext.decode(cookie);	
+		    			}
+		    			
+		    			var found = false;
+		    			Ext.each(cookie, function(item, key) {
+		    				if (item == nodePath) {
+		    					found = true;
+		    				}
+		    			});
+		    			
+		    			if (!found) {
+			    			cookie.push(nodePath);
+			    			Ext.util.Cookies.set('categoryTree', Ext.encode(cookie));
+		    			}
+		    		}
+		    	},
+		    	collapsenode: {
+		    		scope: this,
+		    		fn: function(node) {
+		    			var cookie = Ext.util.Cookies.get('categoryTree');
+		    			var nodePath = node.getPath();
+		    			
+		    			if (!cookie) {
+		    				var cookie = new Array();
+		    			} else {
+		    				cookie = Ext.decode(cookie);	
+		    			}
+		    			
+		    			var newArray = new Array();
+		    			Ext.each(cookie, function(item, key) {
+		    				if (item != nodePath) {
+		    					newArray.push(item);	
+		    				}
+		    			});
+		    			
+		    			Ext.util.Cookies.set('categoryTree', Ext.encode(newArray));
 		    		}
 		    	},
 		    	checkchange: function(node, checked) {
@@ -935,6 +992,13 @@ var vcPageCategories = Ext.extend(Ext.Panel, {
 		});
 		
 		this.categoryTree.getRootNode().expand();
+		
+		var cookie = Ext.util.Cookies.get('categoryTree');
+		if (!cookie) {
+			var cookie = new Array();
+		} else {
+			cookie = Ext.decode(cookie);	
+		}
 		
 		// The mainpanel always has to be in the "this.mainPanel" variable
 		this.mainPanel = new Ext.Panel({

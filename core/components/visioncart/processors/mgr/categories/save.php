@@ -35,6 +35,12 @@ if (isset($categoryConfig['id']) && !empty($categoryConfig['id']) && $categoryCo
 	$category->save();
 }
 
+if ($categoryConfig['emptyCache'] == true) {
+	$modx->runProcessor('clearCache', array(), array(
+		'location' => 'system'
+	));
+}
+
 // Return values
 if ($category->save()) {
 	return $modx->error->success('', $category);

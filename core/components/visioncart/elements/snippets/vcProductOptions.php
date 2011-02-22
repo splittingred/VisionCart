@@ -14,6 +14,7 @@ $scriptProperties['return'] = $modx->getOption('return', $scriptProperties, 'tpl
 $scriptProperties['id'] = $modx->getOption('id', $scriptProperties, $vc->product->get('id'));
 $scriptProperties['selectedValues'] = $modx->getOption('selectedValues', $scriptProperties, array());
 $scriptProperties['categoryId'] = $modx->getOption('categoryId', $scriptProperties, $vc->category->get('id'));
+$scriptProperties['scheme'] = $modx->getOption('scheme', $scriptProperties, -1);
 
 if (!isset($scriptProperties['id']) || !is_numeric($scriptProperties['id'])) {
 	return '';
@@ -225,7 +226,8 @@ if ($skuFound != false) {
 		'categoryid' => $scriptProperties['categoryId']
 	));
 	$skuLink = $vc->makeUrl(array(
-		'productCategory' => $productLink->get('id')
+		'productCategory' => $productLink->get('id'),
+		'scheme' => $scriptProperties['scheme']
 	));
 }
 

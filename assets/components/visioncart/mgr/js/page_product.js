@@ -823,6 +823,12 @@ var vcPageProduct = Ext.extend(Ext.Panel, {
 									}
 								},
 								{
+									xtype: 'checkbox',
+									name: 'emptyCache',
+									fieldLabel: 'Empty cache',
+									checked: true
+								},
+								{
 									
 									fieldLabel: 'Active',
 									frameBorder: false,
@@ -840,7 +846,6 @@ var vcPageProduct = Ext.extend(Ext.Panel, {
 											hidden: true,
 											html: '<div class="vc-lock"></div>'
 										}
-										
 									]
 								},
 								this.categoryTree
@@ -903,7 +908,7 @@ var vcPageProduct = Ext.extend(Ext.Panel, {
 							}
 						},
 						{
-							title: 'Extra fields', 
+							title: 'Custom fields', 
 							layout: 'form',
 							autoHeight: true,
 							id: 'extra-info-form',

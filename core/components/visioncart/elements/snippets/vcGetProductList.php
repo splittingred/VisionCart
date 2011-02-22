@@ -31,7 +31,7 @@ $pagination = array(
 );
 
 $scriptProperties['config'] = $modx->getOption('config', $scriptProperties, 'default');
-$config = $vc->getConfigFile($scriptProperties['shopId'], 'getCategoryProducts', null, array('config' => $scriptProperties['config']));
+$config = $vc->getConfigFile($scriptProperties['shopId'], 'getProductList', null, array('config' => $scriptProperties['config']));
 $scriptProperties = array_merge($config, $scriptProperties);
 
 // Configuration
@@ -44,6 +44,7 @@ $scriptProperties['limit'] = $modx->getOption('limit', $scriptProperties, $defau
 $scriptProperties['offset'] = $modx->getOption('offset', $scriptProperties, $defaults['offset']);
 $scriptProperties['sort'] = $modx->getOption('sort', $scriptProperties, 'ASC');
 $scriptProperties['sortBy'] = $modx->getOption('sortBy', $scriptProperties, 'name');
+$scriptProperties['scheme'] = $modx->getOption('scheme', $scriptProperties, -1);
 
 // Template
 $scriptProperties['wrapperTpl'] = $modx->getOption('wrapperTpl', $scriptProperties);
@@ -66,7 +67,8 @@ $category = $vc->getCategory(end($vc->router['categories']), array(
 	'whereColumn' => 'alias'
 ));
 $category->set('url', $vc->makeUrl(array(
-	'categoryId' => $category->get('id')
+	'categoryId' => $category->get('id'),
+	'scheme' => $scriptProperties['scheme']
 )));
 
 // Parse the columns and translate where needed
@@ -174,7 +176,8 @@ foreach($products as $product) {
 					'field' => $product[$column['dataIndex']],
 					'url' => $vc->makeUrl(array(
 						'productCategory' => $product['linkId'],
-						'shopId' => $product['shopid']
+						'shopId' => $product['shopid'],
+						'scheme' => $scriptProperties['scheme']
 					))
 				));
 			} else {

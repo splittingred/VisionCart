@@ -2155,7 +2155,7 @@ class VisionCart {
  		$config['internalLimit'] = $this->modx->getOption('internalLimit', $config, 0);
  		$config['showProducts'] = $this->modx->getOption('showProducts', $config, 1);
  		$config['excludeCategories'] = $this->modx->getOption('excludeCategories', $config, '');
- 		
+
  		// Template
 		$params['wrapperTpl'] = $this->modx->getOption('wrapperTpl', $config, '');
 		$params['categoryTpl'] = $this->modx->getOption('categoryTpl', $config, '');
@@ -2306,9 +2306,10 @@ class VisionCart {
  			$newConfig = $config;
  			$newConfig['children'] = $products;
  			$newConfig['parent'] = $category->get('id');
+ 			$scriptProperties['parent'] = $newConfig['parent'];
  			
  			$newConfig['internalDepth'] += 1;
- 			if ($config['depth'] != 0 && $newConfig['internalDepth'] <= $config['detph']) {
+ 			if ($config['depth'] != 0 && $newConfig['internalDepth'] <= $config['depth']) {
  				$output['innerChunk'] = $this->wayFinder($scriptProperties, $newConfig);
 			} else {
 				$output['innerChunk'] = $this->wayFinder($scriptProperties, $newConfig);

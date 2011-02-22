@@ -255,7 +255,7 @@ var vcPageShops = Ext.extend(Ext.Panel, {
 							items: [
 								{
 									xtype: 'textfield',
-									fieldLabel: 'Shop name',
+									fieldLabel: 'Shop name*',
 									name: 'name',
 									allowBlank: false,
 									listeners: {
@@ -271,14 +271,14 @@ var vcPageShops = Ext.extend(Ext.Panel, {
 								},
 								{
 									xtype: 'textfield',
-									fieldLabel: 'Shop alias',
+									fieldLabel: 'Shop alias*',
 									id: 'shop-alias',
 									name: 'alias',
 									allowBlank: false
 								},
 								{
 									xtype: 'textarea',
-									fieldLabel: 'Shop description',
+									fieldLabel: 'Shop description*',
 									name: 'description',
 									rows: 4,
 									anchor: '100%',
@@ -293,9 +293,15 @@ var vcPageShops = Ext.extend(Ext.Panel, {
 									store: vcCore.stores.context,
 									mode: 'remote',
 									triggerAction: 'all',
-									fieldLabel: 'Context',
+									fieldLabel: 'Context*',
 									name: 'context',
 									allowBlank: false
+								},
+								{
+									xtype: 'checkbox',
+									name: 'emptyCache',
+									fieldLabel: 'Empty cache',
+									checked: true
 								},
 								{
 									xtype: 'checkbox',
@@ -328,7 +334,7 @@ var vcPageShops = Ext.extend(Ext.Panel, {
 													items: [
 														{
 															xtype: 'textfield',
-															fieldLabel: 'Shop currency',
+															fieldLabel: 'Shop currency*',
 															name: 'currency',
 															allowBlank: false	 
 														},
@@ -352,7 +358,7 @@ var vcPageShops = Ext.extend(Ext.Panel, {
 														},
 														{
 															xtype: 'textfield',
-															fieldLabel: 'Decimal separator',
+															fieldLabel: 'Decimal separator*',
 															name: 'decimalSeparator',
 															allowBlank: false	 
 														},
@@ -433,7 +439,7 @@ var vcPageShops = Ext.extend(Ext.Panel, {
 													anchor: '100%',
 													name: 'thumbnails',
 													allowBlank: false,
-													fieldLabel: 'Product images',
+													fieldLabel: 'Product images*',
 													description: 'Here you can define what thumbnails should be created when you upload a new product picture. Define this <b>BEFORE</b> uploading any category pictures because if you change this afterwards the behaviour is very unpredictable.<br /><br />Format:<br /><b>w</b>=widthInPixels,<b>h</b>=heightInPixels,<b>prefix</b>=img_,<b>crop</b>=false'
 												},
 												{
@@ -441,7 +447,7 @@ var vcPageShops = Ext.extend(Ext.Panel, {
 													anchor: '100%',
 													name: 'categoryThumbnails',
 													allowBlank: false,
-													fieldLabel: 'Category images',
+													fieldLabel: 'Category images*',
 													description: 'Here you can define what thumbnails should be created when you upload a new category picture. Define this <b>BEFORE</b> uploading any category pictures because if you change this afterwards the behaviour is very unpredictable.<br /><br />Format:<br /><b>w</b>=widthInPixels,<b>h</b>=heightInPixels,<b>prefix</b>=img_,<b>crop</b>=false'
 												}
 											]
@@ -463,7 +469,7 @@ var vcPageShops = Ext.extend(Ext.Panel, {
 														},
 														{
 															xtype: 'textfield',
-															fieldLabel: 'Free shipping boundary',
+															fieldLabel: 'Free shipping boundary*',
 															name: 'freeShippingBoundary',
 															allowBlank: false,
 															description: 'If the total amount of an order is more then this boundary shipping will be free'
@@ -476,7 +482,7 @@ var vcPageShops = Ext.extend(Ext.Panel, {
 														},
 														{
 															xtype: 'textfield',
-															fieldLabel: 'Minimum order amount',
+															fieldLabel: 'Minimum order amount*',
 															name: 'minimumOrderAmount',
 															allowBlank: false,
 															description: 'The minimum amount of a basket before a user can order'
@@ -508,9 +514,9 @@ var vcPageShops = Ext.extend(Ext.Panel, {
 													items: [
 														{
 															xtype: 'textfield',
-															fieldLabel: 'Order number format',
+															fieldLabel: 'Order number format*',
 															name: 'orderNumberFormat',
-															description: 'Format your ordernumber.<br /><b>Do not change this after the first order is placed!</b><br />You can use the following placeholders:<br /><b>[[+year]]</b> - The current year<br /><b>[[+orderNumber]]</b> - The current ordernumber',
+															description: 'Format your ordernumber.<br /><b>Do not change this after the first order is placed!</b><br />You can use the following placeholders:<br /><b>[[+year]]</b> - The current year<br /><b>[[+ordernumber]]</b> - The current ordernumber',
 															allowBlank: false
 														},
 														{
@@ -540,7 +546,7 @@ var vcPageShops = Ext.extend(Ext.Panel, {
 														},
 														{
 															xtype: 'textfield',
-															fieldLabel: 'Current order number',
+															fieldLabel: 'Current order number*',
 															name: 'currentOrderNumber',
 															description: 'Here you can set/change the current order number. <b>We strongly advice you to not change this unless you are starting a new year or a new administration.</b>',
 															allowBlank: false
@@ -560,13 +566,13 @@ var vcPageShops = Ext.extend(Ext.Panel, {
 													items: [
 														{
 															xtype: 'textfield',
-															fieldLabel: 'From name',
+															fieldLabel: 'From name*',
 															name: 'emailFromName',
 															allowBlank: false	
 														},
 														{
 															xtype: 'textfield',
-															fieldLabel: 'From address',
+															fieldLabel: 'From address*',
 															name: 'emailFromAddress',
 															allowBlank: false	
 														}
@@ -585,7 +591,7 @@ var vcPageShops = Ext.extend(Ext.Panel, {
 															store: vcCore.stores.emailChunks,
 															mode: 'remote',
 															triggerAction: 'all',
-															fieldLabel: 'Outer email chunk',
+															fieldLabel: 'Outer email chunk*',
 															name: 'emailOuterChunk',
 															allowBlank: false
 														}
@@ -597,7 +603,7 @@ var vcPageShops = Ext.extend(Ext.Panel, {
 													items: [
 														{
 															xtype: 'textfield',
-															fieldLabel: 'Status update subject',
+															fieldLabel: 'Status update subject*',
 															name: 'emailSubjectStatusUpdate',
 															allowBlank: false,
 															description: 'You can use any order object column as placeholder in the subject! (eg. [[+ordernumber]])'
@@ -621,7 +627,7 @@ var vcPageShops = Ext.extend(Ext.Panel, {
 													store: vcCore.stores.themes,
 													mode: 'remote',
 													triggerAction: 'all',
-													fieldLabel: 'Default theme',
+													fieldLabel: 'Default theme*',
 													name: 'shopTheme',
 													allowBlank: false
 												},
@@ -634,7 +640,7 @@ var vcPageShops = Ext.extend(Ext.Panel, {
 													store: vcCore.stores.resources,
 													mode: 'remote',
 													triggerAction: 'all',
-													fieldLabel: 'Default category',
+													fieldLabel: 'Default category*',
 													name: 'categoryResource',
 													allowBlank: false
 												},
@@ -647,7 +653,7 @@ var vcPageShops = Ext.extend(Ext.Panel, {
 													store: vcCore.stores.resources,
 													mode: 'remote',
 													triggerAction: 'all',
-													fieldLabel: 'Default product',
+													fieldLabel: 'Default product*',
 													name: 'productResource',
 													allowBlank: false
 												},
@@ -660,7 +666,7 @@ var vcPageShops = Ext.extend(Ext.Panel, {
 													store: vcCore.stores.resources,
 													mode: 'remote',
 													triggerAction: 'all',
-													fieldLabel: 'Order process',
+													fieldLabel: 'Order process*',
 													name: 'orderProcessResource',
 													allowBlank: false
 												},
@@ -673,7 +679,7 @@ var vcPageShops = Ext.extend(Ext.Panel, {
 													store: vcCore.stores.resources,
 													mode: 'remote',
 													triggerAction: 'all',
-													fieldLabel: 'Order history',
+													fieldLabel: 'Order history*',
 													name: 'orderHistoryResource',
 													allowBlank: false
 												}
@@ -830,7 +836,8 @@ var vcPageShops = Ext.extend(Ext.Panel, {
 				    					categoryThumbnails: 'w=75,h=75,prefix=thumb_'+"\n"+'w=250,h=250,prefix=big_',
 				    					hideSkus: true,
 				    					orderNumberLength: 5,
-				    					orderNumberFormat: 'ORD[[+year]][[+orderNumber]]',
+				    					orderNumberFormat: 'ORD[[+year]][[+ordernumber]]',
+				    					emailSubjectStatusUpdate: '[[+ordernumber]]: Your order has been updated!',
 				    					currentOrderNumber: 0,
 				    					decimalSeparator: ',',
 				    					calculateShippingTaxes: 1,

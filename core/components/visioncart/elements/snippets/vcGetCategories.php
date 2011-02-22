@@ -18,6 +18,7 @@ $scriptProperties = array_merge($config, $scriptProperties);
 $scriptProperties['parents'] = $modx->getOption('parents', $scriptProperties, 0);
 $scriptProperties['exclude'] = $modx->getOption('exclude', $scriptProperties, '');
 $scriptProperties['shopId'] = $modx->getOption('shopId', $scriptProperties, $shopId);
+$scriptProperties['scheme'] = $modx->getOption('scheme', $scriptProperties, -1);
 
 $scriptProperties['parents'] = explode(',', $scriptProperties['parents']);
 $scriptProperties['exclude'] = explode(',', $scriptProperties['exclude']);
@@ -36,7 +37,8 @@ foreach($scriptProperties['parents'] as $parent) {
 		if (!in_array($category['id'], $scriptProperties['exclude'])) {
 			$category['url'] = $vc->makeUrl(array(
 				'categoryId' => $category['id'],
-				'shopId' => $scriptProperties['shopId']
+				'shopId' => $scriptProperties['shopId'],
+				'scheme' => $scriptProperties['scheme']
 			));
 			$categories[] = $category;
 		}

@@ -1,10 +1,5 @@
 <?php
 
-/*$output = $modx->executeProcessor(array(
-   'action' => 'mgr/orders/vieworder',
-   'processors_path' => $visionCart->config['processorsPath']
-));*/
-
 //get order id
 $id = $_REQUEST['id'];
 
