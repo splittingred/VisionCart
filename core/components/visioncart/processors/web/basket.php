@@ -183,7 +183,7 @@ switch($scriptProperties['return']) {
 				'order' => $basket
 			));
 			
-			echo $returnValue;
+			return $returnValue;
 		}
 		break;	
 }

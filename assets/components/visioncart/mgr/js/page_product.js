@@ -913,6 +913,12 @@ var vcPageProduct = Ext.extend(Ext.Panel, {
 									fn: function() {
 										this.loadExtraFields();
 									}
+								},
+								deactivate: {
+									scope: this,
+									fn: function() {
+										this.saveProduct();
+									}
 								}
 							},
 							items: [

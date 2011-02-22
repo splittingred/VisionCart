@@ -2523,8 +2523,9 @@ class VisionCart {
 			'type' => 'id',
 			'value' => $config['shopId'] 
 		));
-    	    	
-    	$config = array_merge($this->getConfigFile($config['shopId'], 'export'), $config);
+    	
+		$configFile = $modx->getOption('config', $config, 'default');
+    	$config = array_merge($this->getConfigFile($config['shopId'], 'export', null, array('config' => $configFile)), $config);
 		
 		$output = '';
 		if ($config['categories'] == 0) {
@@ -2782,7 +2783,7 @@ class VisionCart {
     public function parseChunk($tpl, $params=array(), $config=array()) {
     	$config['isChunk'] = $this->modx->getOption('isChunk', $config, false);
     	
-    	if ($config['isChunk'] == true && substr($tpl, 0, 6) != '@CODE:') {
+    	if ($config['isChunk'] == true || substr($tpl, 0, 6) != '@CODE:') {
     		$output = $this->modx->getChunk($tpl, $params);
     	} else {
     		if (substr($tpl, 0, 6) == '@CODE:') {
@@ -2816,10 +2817,9 @@ class VisionCart {
     public function order($config=array()) {
     	// Update basket if needed
 		if (!empty($_REQUEST) && isset($_REQUEST['products']) && !empty($_REQUEST['products'])) {
-			$this->modx->executeProcessor(array_merge($_REQUEST, array(
+			$this->modx->runProcessor('basket', array(), array_merge($_REQUEST, array(
 				'location' => 'web',
 				'processors_path' => $this->config['processorsPath'],
-				'action' => 'basket',
 				'return' => 0
 			)));
 		}
@@ -2830,11 +2830,12 @@ class VisionCart {
 			$step = 1;
 		}
     	
-    	return $this->modx->executeProcessor(array(
-    		'action' => 'order/step'.$step,
+    	$processor = $this->modx->runProcessor('order/step'.$step, $config, array(
     		'location' => 'web',
     		'processors_path' => $this->config['processorsPath']
     	));
+    	
+    	return $processor->getResponse();
     }
     
     /**

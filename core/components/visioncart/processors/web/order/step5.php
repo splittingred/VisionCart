@@ -1,10 +1,5 @@
 <?php
 
-if (!isset($modx->visioncart)) {
-    $modx->addPackage('visioncart', $modx->getOption('core_path').'components/visioncart/model/');
-    $modx->visioncart = $modx->getService('visioncart', 'VisionCart', $modx->getOption('core_path').'components/visioncart/model/visioncart/');
-}
-
 $vc =& $modx->visioncart;
 $options = array_merge($options, $scriptProperties);
 $order = $vc->getBasket();
@@ -23,7 +18,8 @@ if (!$modx->user->isAuthenticated()) {
 }
 
 // Get theme configuration
-$config = $vc->getConfigFile($order->get('shopid'), 'orderStep5');
+$scriptProperties['config'] = $modx->getOption('config', $scriptProperties, 'default');
+$config = $vc->getConfigFile($order->get('shopid'), 'orderStep5', null, array('config' => $scriptProperties['config']));
 
 $chunkArray = array(
 	'vcOrderFinalBasketRow' => '', 

@@ -14,7 +14,9 @@ if (isset($_REQUEST['ctx']) && $_REQUEST['ctx'] == 'web') {
 require_once MODX_CONNECTORS_PATH.'index.php';
 
 $corePath = $modx->getOption('visioncart.core_path', null, $modx->getOption('core_path', null, MODX_CORE_PATH));
-$modx->visioncart = $modx->getService('visioncart', 'VisionCart', $corePath.'components/visioncart/model/visioncart/', array(
+
+$modx->addPackage('visioncart', $corePath.'components/visioncart/model/');
+$modx->visioncart = $modx->getService('visioncart', 'VisionCart', $corePath.'components/visioncart/model/visioncart/', array( 
 	'method' => 'ajax',
 	'initialize' => 'plugin',
 	'context' => (string) $modx->context->get('key'),

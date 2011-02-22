@@ -1,10 +1,5 @@
 <?php
 
-if (!isset($modx->visioncart) || $modx->visioncart == null) {
-	$modx->addPackage('visioncart', $modx->getOption('core_path').'components/visioncart/model/');
-    $modx->visioncart = $modx->getService('visioncart', 'VisionCart', $modx->getOption('core_path').'components/visioncart/model/visioncart/');	
-}
-
 $vc =& $modx->visioncart;
 $order = $vc->getBasket();
 $vc->calculateOrderPrice($order);
@@ -15,7 +10,8 @@ $content = '';
 $basket = $order->get('basket');
 
 // Get theme configuration
-$config = $vc->getConfigFile($order->get('shopid'), 'orderStep1');
+$scriptProperties['config'] = $modx->getOption('config', $scriptProperties, 'default');
+$config = $vc->getConfigFile($order->get('shopid'), 'orderStep1', null, array('config' => $scriptProperties['config']));
 
 $chunkArray = array(
 	'vcOrderBasketEmpty' => '', 
