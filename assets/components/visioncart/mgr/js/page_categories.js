@@ -4,6 +4,7 @@ var vcPageCategories = Ext.extend(Ext.Panel, {
 		this.oldParent = false;
 		this.newParent = false;
 		this.currentNode = false;
+		this.loaded = false;
 		
 		this.treeMenu = new Ext.menu.Menu({
 			baseParams: {
@@ -877,24 +878,25 @@ var vcPageCategories = Ext.extend(Ext.Panel, {
 						this.newParent = newParent;
 						this.currentNode = node;
 						
+						var sortArray = new Array();
 			    		newParent.eachChild(function(item) {
-			    			if (item == node) {
-			    				return false;
-			    			}
+			    			sortArray.push(item.attributes.id);
 			    			currentTarget += 1;
 			    		}, this);
 			    		
+			    		vcCore.config.disableMask = true;
 			    		vcCore.ajax.request({
 							url: vcCore.config.connectorUrl,
 							params: {
 								sourceId: node.id,
 								targetId: newParent.id,
-								targetSort: currentTarget,
+								sortArray: Ext.encode(sortArray),
 								action: 'mgr/categories/savenodes'
 							},
 							scope: this,
 							success: function(response) {
-								this.categoryTree.getRootNode().reload();
+								Ext.get(node.ui.getEl()).frame();
+								vcCore.config.disableMask = false;
 							}
 						});
 		    		}	
@@ -902,6 +904,13 @@ var vcPageCategories = Ext.extend(Ext.Panel, {
 		    	load: {
 		    		scope: this,
 		    		fn: function(node) {
+		    			var cookie = Ext.util.Cookies.get('categoryTree');
+		    			if (!cookie) {
+		    				var cookie = new Array();
+		    			} else {
+		    				cookie = Ext.decode(cookie);	
+		    			}
+		    			
 		    			if (node.attributes.id == 'category:0|parent:0') {
 							Ext.each(cookie, function(item, key) {
 								this.categoryTree.expandPath(item);
@@ -912,7 +921,10 @@ var vcPageCategories = Ext.extend(Ext.Panel, {
 		    	expandnode: {
 		    		scope: this,
 		    		fn: function(node) { 
-		    			this.categoryTreeSorter.doSort(node);
+		    			if (!this.loaded) {
+		    				//this.categoryTreeSorter.doSort(node);
+		    				this.loaded = true;
+		    			}
 		    			var nodePath = node.getPath();
 		    			var cookie = Ext.util.Cookies.get('categoryTree');
 		    			if (!cookie) {
@@ -980,15 +992,6 @@ var vcPageCategories = Ext.extend(Ext.Panel, {
 			    	}
 		    	}
 		    }
-		});
-		
-		this.categoryTreeSorter = new Ext.tree.TreeSorter(this.categoryTree, {
-			folderSort: true,
-			dir: 'asc',
-			property: 'sort',
-			sortType: function(sortValue) {
-				return sortValue;	
-			}
 		});
 		
 		this.categoryTree.getRootNode().expand();

@@ -53,6 +53,10 @@ $product = $vc->getProduct($scriptProperties['id'], array(
 	'asArray' => true
 ));
 
+if ($product == null) {
+	return '';	
+}
+
 if (!empty($product) && isset($product['pictures']) && !empty($product['pictures'])) {
 	$output = '';
 	

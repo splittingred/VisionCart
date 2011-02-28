@@ -14,7 +14,7 @@ $params['vcPaymentRow'] = '@CODE:<tr>
 	<td>[[+name]]</td>
 	<td>[[+description]]</td>
 	<td>[[+costs]]</td>
-	<td><input type="radio" name="vc_payment_method" value="[[+id]]" /></td>
+	<td><input type="radio" [[!+selected:if=`[[+selected]]`:is=`1`:then=`checked="checked"`]] name="vc_payment_method" value="[[+id]]" /></td>
 </tr>';
 
 $params['vcPaymentWrapper'] = '@CODE:<table width="100%">

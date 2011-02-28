@@ -12,13 +12,8 @@ Please check that you have removed:
 (* = you can leave these as well, but they won't get update as they do not belong to
 the default package anymore)
 
-From this version on the package is updatable through the package manager. This is 
-because we did some dirty manual work in the first beta that doesn't get removed
-by just uninstalling it.
-
-VisionCart is provided "as is". We are not responsible for any damage or loss you or 
-your company suffers by using VisionCart. When you click the next button, you take all
-responsibility for using this package.
+You should be able to update from beta2 to this one safely but just to make
+sure: MAKE A BACKUP OF YOUR FILES.
 
 VisionCart is developed and maintained by 1-vision (http://www.1-vision.nl)
 located in the Netherlands.

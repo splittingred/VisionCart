@@ -27,6 +27,10 @@ $output = array(
 
 $product = $vc->getProduct($scriptProperties['id']);
 
+if ($product == null) {
+	return '';	
+}
+
 $link = $product->getOne('ProductCategory');
 $category = $vc->getCategory($link->get('categoryid'), array(
 	'whereColumn' => 'id',

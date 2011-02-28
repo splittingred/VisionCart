@@ -33,9 +33,10 @@ $params['vcBasketWrapper'] = '@CODE:<form action="" method="post"><table width="
 <input type="hidden" name="basketAction" value="update" />
 </form>
 <hr />
+[[!+orderAmountMet:if=`[[+orderAmountMet]]`:is=`0`:then=`<b>You have not met the minimum order amount.</b>`:else=`
 <form action="[[+action]]" method="post">
 <input type="submit" value="Next" />
-</form>';
+</form>`]]';
 
 $params['vcOrderStep1'] = '@CODE:<h2>Basket</h2>
 [[+content]]';

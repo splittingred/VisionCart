@@ -86,17 +86,17 @@ $scriptProperties['exclude'] = explode(',',  $scriptProperties['exclude']);
 
 $products = array();
 foreach($scriptProperties['parents'] as $parent) {
-        // Fetch the parent (for shop ID)
-        if (!isset($modx->visioncart) || !isset($modx->visioncart->shop)) {
-            $category = $modx->getObject('vcCategory', (int) $parent);
-            $shopId = $category->get('shopid');
-        } else {
-            $shopId = $modx->visioncart->shop->get('id');
-        }
+    // Fetch the parent (for shop ID)
+    if (!isset($modx->visioncart) || !isset($modx->visioncart->shop)) {
+        $category = $modx->getObject('vcCategory', (int) $parent);
+        $shopId = $category->get('shopid');
+    } else {
+        $shopId = $modx->visioncart->shop->get('id');
+    }
 
     $stack = $vc->getProducts($parent, array(
         'hideSKU' => $scriptProperties['hideSKU'],
-                'shopId' => $shopId
+        'shopId' => $shopId
     ));
 
     if ($stack['total'] != 0 && !empty($stack['data'])) {

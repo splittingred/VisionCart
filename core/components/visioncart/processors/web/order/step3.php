@@ -16,9 +16,29 @@ if (!$modx->user->isAuthenticated()) {
 	exit();
 }
 
+// Check for minimum order amount
+if ($vc->getShopSetting('enableMinimumOrderAmount') == 1) {
+	if ($order->get('totalorderamountin') <= $vc->getShopSetting('minimumOrderAmount')) {
+		$modx->sendRedirect($modx->makeUrl($modx->resource->get('id'), '', 'step=1'));
+		exit();
+	} 
+}
+
+// Update order step
+if (!isset($_SESSION['vc-order-step'])) {
+	$_SESSION['vc-order-step'] = 3;
+} elseif ($_SESSION['vc-order-step'] < 3) {
+	$_SESSION['vc-order-step'] = 3;
+}
+
+$vc->fireEvent('vcEventOrderStep3', '', array(
+	'order' => $order
+));
+
 // Get theme configuration
 $scriptProperties['config'] = $modx->getOption('config', $scriptProperties, 'default');
 $config = $vc->getConfigFile($order->get('shopid'), 'orderStep3', null, array('config' => $scriptProperties['config']));
+$config = array_merge($config, $scriptProperties);
 
 $chunkArray = array(
 	'vcShippingRow' => '', 
@@ -102,7 +122,7 @@ foreach($shippingModules as $shippingModule) {
 	$shippingModule = array_merge($shippingModule, $returnValue);
 
 	$shippingModule['selected'] = '';
-	if ($order->get('shippingid') == $shippingModule['id']) {
+	if ($order->get('shippingid') == $shippingModule['id'] && $order->get('shippingid') != '') {
 		$shippingModule['selected'] = '1';	
 	} 
 	
@@ -118,11 +138,20 @@ if (isset($_REQUEST['vc_shipping_method'])) {
 	
 	// Check if the module exists
 	if ($shippingMethod != 0 && in_array($shippingMethod, $shippingModuleArray)) {
+		// Update order step
+		if ($_SESSION['vc-order-step'] <= 3) {
+			$_SESSION['vc-order-step'] = 4;
+		}
+		
 		// Update the order and continue
 		$order->set('shippingid', $shippingMethod);
 		$order->save();
 		
 		$vc->calculateOrderPrice($order);
+		$vc->fireEvent('vcEventChooseShipping', '', array(
+			'order' => $order
+		));
+		
 		$modx->sendRedirect($modx->makeUrl($modx->resource->get('id'), '', 'step=4'));
 		exit();
 	}

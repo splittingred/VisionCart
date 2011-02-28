@@ -17,9 +17,28 @@ if (!$modx->user->isAuthenticated()) {
 	exit();
 }
 
+// Check for minimum order amount
+if ($vc->getShopSetting('enableMinimumOrderAmount') == 1) {
+	if ($order->get('totalorderamountin') <= $vc->getShopSetting('minimumOrderAmount')) {
+		$modx->sendRedirect($modx->makeUrl($modx->resource->get('id'), '', 'step=1'));
+		exit();
+	} 
+}
+
+// Update order step
+if (!isset($_SESSION['vc-order-step']) || $_SESSION['vc-order-step'] < 5) {
+	$modx->sendRedirect($modx->makeUrl($modx->resource->get('id'), '', 'step=4'));
+	exit();
+}
+
+$vc->fireEvent('vcEventOrderStep5', '', array(
+	'order' => $order
+));
+
 // Get theme configuration
 $scriptProperties['config'] = $modx->getOption('config', $scriptProperties, 'default');
 $config = $vc->getConfigFile($order->get('shopid'), 'orderStep5', null, array('config' => $scriptProperties['config']));
+$config = array_merge($config, $scriptProperties);
 
 $chunkArray = array(
 	'vcOrderFinalBasketRow' => '', 
@@ -143,6 +162,10 @@ $content = $vc->parseChunk($chunkArray['vcOrderFinalBasketWrapper'], array_merge
 )), array('isChunk' => true)); 
 
 if (isset($_REQUEST['vc_order_confirm'])) {
+	$vc->fireEvent('vcEventConfirmOrder', 'before', array(
+		'order' => $order
+	));
+	
 	if ($order->get('ordernumber') == '') {
 		$orderNumber = $vc->generateOrderNumber();
 		$order->set('ordernumber', $orderNumber);
@@ -150,7 +173,10 @@ if (isset($_REQUEST['vc_order_confirm'])) {
 	} else {
 		$orderNumber = $order->get('ordernumber');
 	}
-	 
+	
+	// Last order step
+	$_SESSION['vc-order-step'] = 6;
+	
 	// Update status to new and update the order time
 	$order->set('ordertime', time());
 	$order->set('status', 1);
@@ -158,6 +184,10 @@ if (isset($_REQUEST['vc_order_confirm'])) {
 	
 	// Send an order email
 	$vc->sendStatusEmail($order, true);
+	
+	$vc->fireEvent('vcEventConfirmOrder', 'after', array(
+		'order' => $order
+	));
 
 	// Do payment
 	$paymentModule = $order->getOne('PaymentModule');

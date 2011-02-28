@@ -179,62 +179,80 @@ var vcPageProducts = Ext.extend(Ext.Panel, {
 		    	},
 		    	load: {
 		    		scope: this,
-		    		fn: function() {
-						
+		    		fn: function(node) {
+		    			var cookie = Ext.util.Cookies.get('productTree');
+		    			if (!cookie) {
+		    				var cookie = new Array();
+		    			} else {
+		    				cookie = Ext.decode(cookie);	
+		    			}
+		    			
+		    			if (node.attributes.id == 'category:0|parent:0') {
+							Ext.each(cookie, function(item, key) {
+								this.productTree.expandPath(item);
+							}, this);
+		    			}
 		    		}
 		    	},
 		    	expandnode: {
 		    		scope: this,
 		    		fn: function(node) { 
-		    			this.productTreeSorter.doSort(node);
+		    			var nodePath = node.getPath();
+		    			var cookie = Ext.util.Cookies.get('productTree');
+		    			if (!cookie) {
+		    				var cookie = new Array();
+		    			} else {
+		    				cookie = Ext.decode(cookie);	
+		    			}
+		    			
+		    			var found = false;
+		    			Ext.each(cookie, function(item, key) {
+		    				if (item == nodePath) {
+		    					found = true;
+		    				}
+		    			});
+		    			
+		    			if (!found) {
+			    			cookie.push(nodePath);
+			    			Ext.util.Cookies.set('productTree', Ext.encode(cookie));
+		    			}
 		    		}
 		    	},
 		    	movenode: {
 		    		scope: this,
 		    		fn: function(tree, node, oldParent, newParent, index) {
-			    		// Calculate the place where the category should be
 			    		var currentTarget = 0;
 			    		this.oldParent = oldParent;
 						this.newParent = newParent;
-						this.currentNode = newParent;
+						this.currentNode = node;
 						
+						var sortArray = new Array();
 			    		newParent.eachChild(function(item) {
-			    			if (item == node) {
-			    				return false;
-			    			}
-			    			
 			    			if (item.attributes.cls.indexOf('folder') == -1) {
+			    				sortArray.push(item.attributes.id);
 			    				currentTarget += 1;
 			    			}
 			    		}, this);
-			    		
+
+			    		vcCore.config.disableMask = true;
 			    		vcCore.ajax.request({
 							url: vcCore.config.connectorUrl,
 							params: {
 								sourceId: node.id,
 								targetId: newParent.id,
-								targetSort: currentTarget,
 								hideSku: this.skusHidden,
+								sortArray: Ext.encode(sortArray),
 								action: 'mgr/products/savenodes'
 							},
 							scope: this,
 							success: function(response) {
-								//alert(this.currentNode);
-								this.currentNode.reload();
+								Ext.get(node.ui.getEl()).frame();
+								vcCore.config.disableMask = false;
 							}
 						});
 		    		}	
 		    	}
 		    }
-		});
-
-		this.productTreeSorter = new Ext.tree.TreeSorter(this.productTree, {
-			folderSort: false,
-			dir: 'asc',
-			property: 'sort',
-			sortType: function(sortValue) {
-				return sortValue;	
-			}
 		});
 
 		this.productTree.getRootNode().expand();

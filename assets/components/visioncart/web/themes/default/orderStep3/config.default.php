@@ -14,7 +14,7 @@ $params['vcShippingRow'] = '@CODE:<tr>
 <td>[[+name]]</td>
 <td>[[+description]]</td>
 <td>[[+costs]]</td>
-<td><input type="radio" name="vc_shipping_method" value="[[+id]]" /></td>
+<td><input type="radio" [[!+selected:if=`[[+selected]]`:is=`1`:then=`checked="checked"`]] name="vc_shipping_method" value="[[+id]]" /> </td>
 </tr>';
 
 $params['vcShippingWrapper'] = '@CODE:<table width="100%">

@@ -9,9 +9,21 @@ $order->save();
 $content = '';
 $basket = $order->get('basket');
 
+// Init order step variable
+if (!isset($_SESSION['vc-order-step'])) {
+	$_SESSION['vc-order-step'] = 1;
+} elseif ($_SESSION['vc-order-step'] < 1) {
+	$_SESSION['vc-order-step'] = 1;
+}
+
+$vc->fireEvent('vcEventOrderStep1', '', array(
+	'order' => $order
+));
+
 // Get theme configuration
 $scriptProperties['config'] = $modx->getOption('config', $scriptProperties, 'default');
 $config = $vc->getConfigFile($order->get('shopid'), 'orderStep1', null, array('config' => $scriptProperties['config']));
+$config = array_merge($config, $scriptProperties);
 
 $chunkArray = array(
 	'vcOrderBasketEmpty' => '', 
@@ -19,6 +31,14 @@ $chunkArray = array(
 	'vcOrderStep1' => '',
 	'vcBasketRow' => ''
 ); 
+
+// Check for minimum order amount
+$orderAmountMet = 1;
+if ($vc->getShopSetting('enableMinimumOrderAmount') == 1) {
+	if ($order->get('totalorderamountin') <= $vc->getShopSetting('minimumOrderAmount')) {
+		$orderAmountMet = 0;	
+	} 
+}
 
 foreach($chunkArray as $key => $value) {
 	if (isset($config[$key])) {
@@ -30,7 +50,8 @@ foreach($chunkArray as $key => $value) {
 
 if (($order->get('basket') == '' || !is_array($order->get('basket')) || sizeof($order->get('basket')) == 0 || $order->get('status') > 0)) {
 	$content = $vc->parseChunk($chunkArray['vcOrderBasketEmpty'], array(
-		'nextStep' => $nextStep
+		'nextStep' => $nextStep,
+		'orderAmountMet' => $orderAmountMet
 	), array(
 		'isChunk' => true
 	));
@@ -45,7 +66,8 @@ if (($order->get('basket') == '' || !is_array($order->get('basket')) || sizeof($
 	
 	$content = $vc->parseChunk($chunkArray['vcBasketWrapper'], array(
 		'content' => $content,
-		'nextStep' => $nextStep
+		'nextStep' => $nextStep,
+		'orderAmountMet' => $orderAmountMet
 	), array(
 		'isChunk' => true
 	));
@@ -53,7 +75,8 @@ if (($order->get('basket') == '' || !is_array($order->get('basket')) || sizeof($
 
 return $vc->parseChunk($chunkArray['vcOrderStep1'], array(
 	'content' => $content,
-	'action' => $modx->makeUrl($modx->resource->get('id'), '', 'step=2')
+	'action' => $modx->makeUrl($modx->resource->get('id'), '', 'step=2'),
+	'orderAmountMet' => $orderAmountMet
 ), array(
 	'isChunk' => true
 ));

@@ -25,8 +25,9 @@ $sourceLink = $modx->getObject('vcProductCategory', array(
 	'categoryid' => $target
 ));
 
-$currentPlace = 0;
-$count = 0;
+$finalSortArray = json_decode($_REQUEST['sortArray'], true);
+
+$productLinkArray = array();
 foreach($productLinks as $productLink) {
 	if ($hideSkus == 1) {
 		$product = $productLink->getOne('Product');
@@ -35,16 +36,14 @@ foreach($productLinks as $productLink) {
 		}
 	}
 	
-	if ($currentPlace == $targetSort) {
-		$sourceLink->set('sort', $count);
-		$sourceLink->save();
-		$count++;
-	}
-	
-	if ($productLink->get('id') != $sourceLink->get('id')) {
-		$productLink->set('sort', $count);
-		$productLink->save();
-		$count++;
-	}
-	$currentPlace += 1;
+	$productLinkArray[$productLink->get('id')] = $productLink;
 }
+
+foreach($finalSortArray as $key => $productLinkId) {
+	if (isset($productLinkArray[$productLinkId])) {
+		$productLinkArray[$productLinkId]->set('sort', $key);
+		$productLinkArray[$productLinkId]->save();
+	}
+}
+
+return $modx->error->success('');

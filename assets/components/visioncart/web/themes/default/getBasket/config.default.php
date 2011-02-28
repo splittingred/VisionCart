@@ -13,18 +13,24 @@ $params = array();
 $params['outerTpl'] = '@CODE:
 <div>
 	<h3>Cart</h3>
-	<ul>[[+vc.content]]</ul>
+	<ul>[[+innerChunk]]</ul>
 	<hr />
-	You have [[+vc.basket.count]] products in your cart.
+	You have [[+items]] product(s) in your cart.
 	<br /><br />
-	Total: [[+vc.order.totalproductamountin:vcMoney]]
+	Total: [[+order.totalproductamountin:vcMoney]]
 	<br />
-	<form action="" method="post">
+	<form action="" method="post" style="float: left;">
 		<input type="hidden" name="action" value="basket" />
 		<input type="hidden" name="basketAction" value="empty" />
-		<input type="submit" value="Empty cart" />
-		<input type="button" value="Checkout" onclick="window.location=\'[[+checkOutUrl]]\';" />
+		<input type="submit" value="Empty cart" onclick="return confirm(\'Are you sure you want to empty the cart?\');" />
 	</form>
+	<form action="" method="post" style="float: left;">
+		<input type="hidden" name="action" value="basket" />
+		<input type="hidden" name="basketAction" value="checkout" />
+		<input type="submit" value="Checkout &raquo;" />
+	</form>
+	
+	
 </div>';
 $params['rowTpl'] = '@CODE:<li>[[+quantity]]x [[+name]] [[+display.price.in:vcMoney]]</li>';
 $params['emptyBasketTpl'] = '@CODE:Your shopping cart is empty.';

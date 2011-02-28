@@ -1,1 +1,0 @@
-<div onclick="setColor(this); vc.setOptionValue([[+optionid]], [[+id]]);" class="option [[+selected]]" style="background-color: [[+value]]; float: left; width: 25px; height: 25px;"></div>

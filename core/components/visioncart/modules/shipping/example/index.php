@@ -22,23 +22,30 @@ switch($vcAction) {
 		
 		$vc =& $modx->visioncart;
 		$module['config'] = $shippingModule->get('config');
-		$module['calculateShippingTaxes'] = (int) $vc->getShopSetting('calculateShippingTaxes', $shop->get('id'));
-
-		// Set fixed shipping costs
-		$module['shippingCostsEx'] = $module['config']['shippingCosts'] + $amounts['totalShippingPriceEx'];
 		
-		// Add percentage (over the products)
-		if ((int) $module['config']['shippingPercentage'] > 0) {
-			$module['shippingCostsEx'] += ($amounts['totalProductsPriceEx'] / 100) * $module['config']['shippingPercentage'];	
-		}
-		
-		// Check if we need to calculate taxes
-		if ($module['calculateShippingTaxes'] == 1) {
-			$module['shippingCostsIn'] = (($module['shippingCostsEx'] / 100) * $highestTax->get('pricechange')) + $module['shippingCostsEx'];
+		if ($vc->getShopSetting('freeShippingBoundary') != 0 && $order->get('totalorderamountin') >= $vc->getShopSetting('freeShippingBoundary')) {
+			$module['shippingCostsEx'] = 0;
+			$module['shippingCostsIn'] = 0;
 		} else {
-			$module['shippingCostsIn'] = $module['shippingCostsEx'];
+			// Get shipping costs
+			$module['calculateShippingTaxes'] = (int) $vc->getShopSetting('calculateShippingTaxes', $shop->get('id'));
+	
+			// Set fixed shipping costs
+			$module['shippingCostsEx'] = $module['config']['shippingCosts'] + $amounts['totalShippingPriceEx'];
+			
+			// Add percentage (over the products)
+			if ((int) $module['config']['shippingPercentage'] > 0) {
+				$module['shippingCostsEx'] += ($amounts['totalProductsPriceEx'] / 100) * $module['config']['shippingPercentage'];	
+			}
+			
+			// Check if we need to calculate taxes
+			if ($module['calculateShippingTaxes'] == 1) {
+				$module['shippingCostsIn'] = (($module['shippingCostsEx'] / 100) * $highestTax->get('pricechange')) + $module['shippingCostsEx'];
+			} else {
+				$module['shippingCostsIn'] = $module['shippingCostsEx'];
+			}
 		}
-		
+			
 		// Change the order xPDO object and save it (this way it gets taken into account when the user pays the order)
 		$order->set('shippingcostsex', number_format($module['shippingCostsEx'], 2, '.', ''));
 		$order->set('shippingcostsin', number_format($module['shippingCostsIn'], 2, '.', ''));
@@ -67,21 +74,25 @@ switch($vcAction) {
 		if ($highestTax == null) {
 			$highestTax = $vc->getOrderHighestTax($order);	
 		}
-		
-		$module['calculateShippingTaxes'] = (int) $vc->getShopSetting('calculateShippingTaxes', $shop->get('id'));
-		$module['config'] = $shippingModule->get('config');
-		
-		if ((int) $module['config']['shippingPercentage'] > 0) {
-			$percentageAmount = ($order->get('totalproductamountex') / 100) * (int) $module['config']['shippingPercentage'];
-		} else {
-			$percentageAmount = 0;	
-		}
-		
-		$module['shippingCosts'] = $module['config']['shippingCosts'] + $percentageAmount;
 
-		// Check if we need to calculate taxes
-		if ($module['calculateShippingTaxes'] == 1) {
-			$module['shippingCosts'] = (($module['shippingCosts'] / 100) * $highestTax->get('pricechange')) + $module['shippingCosts'];
+		if ($vc->getShopSetting('freeShippingBoundary') != 0 && $order->get('totalorderamountin') >= $vc->getShopSetting('freeShippingBoundary')) {
+			$module['shippingCosts'] = 0;
+		} else {
+			$module['calculateShippingTaxes'] = (int) $vc->getShopSetting('calculateShippingTaxes', $shop->get('id'));
+			$module['config'] = $shippingModule->get('config');
+			
+			if ((int) $module['config']['shippingPercentage'] > 0) {
+				$percentageAmount = ($order->get('totalproductamountex') / 100) * (int) $module['config']['shippingPercentage'];
+			} else {
+				$percentageAmount = 0;	
+			}
+			
+			$module['shippingCosts'] = $module['config']['shippingCosts'] + $percentageAmount;
+	
+			// Check if we need to calculate taxes
+			if ($module['calculateShippingTaxes'] == 1) {
+				$module['shippingCosts'] = (($module['shippingCosts'] / 100) * $highestTax->get('pricechange')) + $module['shippingCosts'];
+			}
 		}
 		
 		return array(

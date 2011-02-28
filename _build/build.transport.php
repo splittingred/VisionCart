@@ -40,7 +40,7 @@ $modx->setLogTarget(XPDO_CLI_MODE ? 'ECHO' : 'HTML');
 
 $modx->loadClass('transport.modPackageBuilder','',false, true);
 $builder = new modPackageBuilder($modx);
-$builder->createPackage('visioncart', '0.1.0', 'beta2');
+$builder->createPackage('visioncart', '0.2.0', 'beta3');
 $builder->registerNamespace('visioncart', false, true, '{core_path}components/visioncart/');
  
 // Add system settings
@@ -63,6 +63,7 @@ require_once(dirname(__FILE__).'/builder.menu.php');
 $builder->setPackageAttributes(array(
     'license' => file_get_contents($sources['docs'] . 'license.txt'),
     'readme' => file_get_contents($sources['docs'] . 'readme.txt'),
+    'changelog' => file_get_contents($sources['docs'] . 'changelog.txt'),
     'setup-options' => array(
         'source' => $sources['build'] . 'setup.options.php'
     )

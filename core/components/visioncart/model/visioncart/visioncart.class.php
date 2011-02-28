@@ -14,7 +14,7 @@ class VisionCart {
 	public $placeholders = array(); //Set private after dev
 	public $domPdf = null;
 	public $logLevel = 0; // 0 = no logging, 1 = log critical errors, 2 = log notices and errors
-	public $devMode = true;
+	public $devMode = false; 
 	
 	public $shop;
 	public $category;
@@ -72,11 +72,7 @@ class VisionCart {
             'connectorUrl' => $path['assets'].'components/visioncart/connector.php'
         ), $config);
         
-        // Put all VisionCart snippets into the snippets folder, dev only!
-        $snippets = $this->modx->getCollection('modSnippet', array(
-			'name:LIKE' => 'vc%'
-		));
-		
+	
 		unset($modx, $path, $settings, $setting, $query, $stack, $shopId, $shop);
 
 		if (isset($this->config['context']) && $this->config['context'] != '') {
@@ -104,6 +100,11 @@ class VisionCart {
      * @return void
      */
     private function writeElements() {
+        // Put all VisionCart snippets into the snippets folder, dev only!
+        $snippets = $this->modx->getCollection('modSnippet', array(
+			'name:LIKE' => 'vc%'
+		));
+		
     	foreach($snippets as $snippet) {
 			file_put_contents($this->config['basePath'].'elements/snippets/'.$snippet->get('name').'.php', '<?php'."\n".$snippet->get('snippet'));
 		}
@@ -131,7 +132,6 @@ class VisionCart {
         switch ($context) {
             case 'mgr':
             	$this->modx->regClientStartupHTMLBlock('<script type="text/javascript">var siteId = \''.$this->modx->site_id.'\';</script>');
-            	
                 $this->modx->lexicon->load('visioncart:default');
 
                 if (!$this->modx->loadClass('visioncart.request.visionCartControllerRequest', $this->config['modelPath'], true, true)) {
@@ -464,8 +464,12 @@ class VisionCart {
      * @param int $shopId The ID of the shop
      * @return string The value of the config key
      */
-    public function getShopSetting($key, $shopId) {
-    	$shop = $this->modx->getObject('vcShop', $shopId);
+    public function getShopSetting($key, $shopId=null) {
+    	if (!isset($shopId)) {
+    		$shop = $this->shop;	
+    	} else {
+    		$shop = $this->modx->getObject('vcShop', $shopId);
+    	}
     	
     	if ($shop == null) {
     		return false;	
@@ -550,7 +554,7 @@ class VisionCart {
 					$this->deleteCookie($basketName);
 				}
 			}
-		}
+		} 
 		
 		if ($createBasket) {
 			// If this is where we are, there's no basket yet so let's create one
@@ -1187,13 +1191,7 @@ class VisionCart {
     	$query->where(array(
 			'id' => $id
 		));
-		
-		if ($config['hideInactive'] == true) {
-			$query->andCondition(array(
-				'active' => 1
-			));
-		}
-    	
+   	
     	if (!empty($config['queryAnd'])) {
     		$query->andCondition($config['queryAnd']);
     	}
@@ -1204,9 +1202,18 @@ class VisionCart {
     	
     	$product = $this->modx->getObject('vcProduct', $query);
     	
+    	
     	if ($product == null) {
     		return false;
     	}
+    	
+		if ($config['hideInactive'] == true) {
+			if (!$this->isPublished($product)) {
+				return false;
+			}
+		}
+    	
+    	$product->set('display', array('price' => $this->calculateProductPrice($product, true)));
     	
     	if ($config['asArray'] == true) {
     		return $product->toArray();
@@ -1259,8 +1266,7 @@ class VisionCart {
 			'ProductCategory.categoryid' => $categoryId,
 			'ProductCategory.shopid' => $config['shopId'],
 			'vcProduct.shopid' => $config['shopId'],
-			'vcProduct.active:!=' => 2,
-			'vcProduct.active' => ($config['hideInactive'] == true) ? 1 : 0,
+			'vcProduct.active:!=' => 2
 		);
 		
 		if ($config['hideSKU'] == true && $config['parent'] == 0) {
@@ -1286,8 +1292,18 @@ class VisionCart {
 		$collection = $this->modx->getCollection('vcProduct', $query);
 		
 		foreach($collection as $product) {
+			if (!$this->isPublished($product)) {
+				continue;	
+			}
+			
 			// Calculate discounts
 			$productPrice = $this->calculateProductPrice($product, true);
+			$product->set('display', array(
+				'price' => array(
+					'in' => $productPrice['in'],
+					'ex' => $productPrice['ex']
+				)
+			));
 			$product->set('pricein', $productPrice['in']);
 			$product->set('priceex', $productPrice['ex']);
 			
@@ -1431,7 +1447,13 @@ class VisionCart {
     		$productView = $config['productview'];
     	}    	
     	
-    	$categories = $this->modx->getCollection('vcCategory', $dependencies);
+    	$sortBy = $this->modx->getOption('sortBy', $config, 'sort');
+    	$sort = $this->modx->getOption('sort', $config, 'ASC');
+    	
+    	$query = $this->modx->newQuery('vcCategory', $dependencies);
+    	$query->sortby($sortBy, $sort);
+    	
+    	$categories = $this->modx->getCollection('vcCategory', $query);
 		$taxesCategory = $this->getShopSetting('taxesCategory', $config['shopid']);
 		    	
     	$output = array();
@@ -1491,7 +1513,7 @@ class VisionCart {
 				'pricepercent' => $category->get('pricepercent'),
 				'id' => 'category:'.$category->get('id').'|parent:'.$category->get('parent'),
 				'cls' => 'folder',
-				'qtip' => $category->get('description'),
+				'qtip' => '',
 				'checked' => $checked,
 				'sort' => $category->get('sort'),
 				'children' => $children,
@@ -1522,6 +1544,12 @@ class VisionCart {
     	$taxesCategory = $this->getShopSetting('taxesCategory', $config['shopid']);
     	$hideSkus = $this->modx->getOption('hideskus', $config, 0);
 
+    	$sortBy = $this->modx->getOption('sortBy', $config, 'sort');
+    	$sort = $this->modx->getOption('sort', $config, 'ASC');
+    	
+    	$query = $this->modx->newQuery('vcCategory', $dependencies);
+    	$query->sortby('sort', 'ASC');
+    	
     	$categories = $this->modx->getCollection('vcCategory', $dependencies);
     	
     	$output = array();
@@ -1546,9 +1574,12 @@ class VisionCart {
     	
 		// Fetch categories products
 		if ($dependencies['parent'] != 0) {
-			$productLinks = $this->modx->getCollection('vcProductCategory', array(
+			$productQuery = $this->modx->newQuery('vcProductCategory', array(
 				'categoryid' => $dependencies['parent']
 			));
+			$productQuery->sortby($sortBy, $sort);
+			
+			$productLinks = $this->modx->getCollection('vcProductCategory', $productQuery);
 			
 			// Fetch each product belonging to this category
 			foreach($productLinks as $productLink) {
@@ -1581,7 +1612,7 @@ class VisionCart {
 					'text' => $product->get('name').' ('.$product->get('id').')',
 					'id' => $product->get('id'),
 					'cls' => 'file'.$extraClass,
-					'qtip' => $product->get('description'),
+					'qtip' => '',
 					'allowChildren' => false,
 					'leaf' => true,
 					'sort' => $productLink->get('sort')
@@ -1972,12 +2003,12 @@ class VisionCart {
 		}
 		
 		$config['mailer'] = $this->modx->mail;
-		$this->fireEvent('vcMail', 'onBeforeMailSent', $config);
+		$this->fireEvent('vcEventMail', 'before', $config);
 		
 		$success = $this->modx->mail->send();
 		
 		$config['success'] = $success;
-		$this->fireEvent('vcMail', 'onAfterMailSent', $config);
+		$this->fireEvent('vcEventMail', 'after', $config);
 		
 		if (!$success) {
 		    $this->modx->log(modX::LOG_LEVEL_ERROR, 'An error occurred while trying to send the email: '.$err);
@@ -2798,12 +2829,10 @@ class VisionCart {
     public function parseChunk($tpl, $params=array(), $config=array()) {
     	$config['isChunk'] = $this->modx->getOption('isChunk', $config, false);
     	
-    	if ($config['isChunk'] == true || substr($tpl, 0, 6) != '@CODE:') {
+    	if (substr($tpl, 0, 6) != '@CODE:') {
     		$output = $this->modx->getChunk($tpl, $params);
     	} else {
-    		if (substr($tpl, 0, 6) == '@CODE:') {
-    			$tpl = substr($tpl, 6);
-    		}
+   			$tpl = substr($tpl, 6);
     		
 	    	$chunk = $this->modx->newObject('modChunk');
 			$chunk->setCacheable(false);
@@ -2877,7 +2906,7 @@ class VisionCart {
     	$amounts['totalWeight'] = 0;
     	$highestTax = null;
     	
-    	$this->fireEvent('vcEventCalculateOrder', 'onBeforeCalculate', array(
+    	$this->fireEvent('vcEventCalculateOrder', 'before', array(
 			'vcAction' => 'process',
 			'shop' => $shop,
 			'order' => $order
@@ -3000,7 +3029,7 @@ class VisionCart {
     		$order->save();
     	}
     	
-    	$this->fireEvent('vcEventCalculateOrder', 'onAfterCalculate', array(
+    	$this->fireEvent('vcEventCalculateOrder', 'after', array(
 			'vcAction' => 'process',
 			'shop' => $shop,
 			'order' => $order

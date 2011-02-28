@@ -11,7 +11,7 @@ if (isset($scriptProperties['id']) || !is_numeric($scriptProperties['id'])) {
 
 $product = $vc->getProduct($scriptProperties['id']);
 
-if (!is_object($product)) {
+if ($product == null) {
 	return '';
 }
 

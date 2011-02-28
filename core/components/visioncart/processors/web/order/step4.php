@@ -17,9 +17,28 @@ if (!$modx->user->isAuthenticated()) {
 	exit();
 }
 
+// Check for minimum order amount
+if ($vc->getShopSetting('enableMinimumOrderAmount') == 1) {
+	if ($order->get('totalorderamountin') <= $vc->getShopSetting('minimumOrderAmount')) {
+		$modx->sendRedirect($modx->makeUrl($modx->resource->get('id'), '', 'step=1'));
+		exit();
+	} 
+}
+
+// Protection for skipping steps
+if (!isset($_SESSION['vc-order-step']) || $_SESSION['vc-order-step'] < 4) {
+	$modx->sendRedirect($modx->makeUrl($modx->resource->get('id'), '', 'step=3'));
+	exit();
+}
+
+$vc->fireEvent('vcEventOrderStep4', '', array(
+	'order' => $order
+));
+
 // Get theme configuration
 $scriptProperties['config'] = $modx->getOption('config', $scriptProperties, 'default');
 $config = $vc->getConfigFile($order->get('shopid'), 'orderStep4', null, array('config' => $scriptProperties['config']));
+$config = array_merge($config, $scriptProperties);
 
 $chunkArray = array(
 	'vcOrderStep4' => '', 
@@ -97,7 +116,7 @@ foreach($paymentModules as $paymentModule) {
 	$paymentModule = array_merge($paymentModule, $returnValue);
 
 	$paymentModule['selected'] = '';
-	if ($order->get('paymentid') == $paymentModule['id']) {
+	if ($order->get('paymentid') == $paymentModule['id'] && $order->get('paymentid') != '') {
 		$paymentModule['selected'] = '1';	
 	} 
 	
@@ -113,11 +132,20 @@ if (isset($_REQUEST['vc_payment_method'])) {
 
 	// Check if the module exists
 	if ($paymentMethod != 0 && in_array($paymentMethod, $paymentModuleArray)) {
+		// Update order step
+		if ($_SESSION['vc-order-step'] <= 4) {
+			$_SESSION['vc-order-step'] = 5;
+		}
+
 		// Update the order and continue
 		$order->set('paymentid', $paymentMethod);
 		$order->save();
 		
 		$vc->calculateOrderPrice($order);
+		$vc->fireEvent('vcEventChoosePayment', '', array(
+			'order' => $order
+		));
+		
 		$modx->sendRedirect($modx->makeUrl($modx->resource->get('id'), '', 'step=5'));
 		exit();
 	}

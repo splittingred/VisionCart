@@ -26,7 +26,7 @@ $scriptProperties['config'] = $modx->getOption('config', $scriptProperties, 'def
 $config = $vc->getConfigFile($vc->shop->get('id'), 'getBasket', null, array('config' => $scriptProperties['config']));
 $basket = $vc->getBasket(false);
 
-$allowedRequestVars = array('basketAction', 'return', 'product', 'products');
+$allowedRequestVars = array('basketAction', 'return', 'product', 'products', 'quantity');
 $requestVars = array();
 foreach($_REQUEST as $key => $value) {
 	if (in_array($key, $allowedRequestVars)) {
@@ -36,6 +36,7 @@ foreach($_REQUEST as $key => $value) {
 
 // Receive script properties
 $scriptProperties = array_merge($config, $requestVars, $scriptProperties);
+
 $scriptProperties['basketAction'] = strtolower($modx->getOption('basketAction', $scriptProperties, ''));
 $scriptProperties['return'] = $modx->getOption('return', $scriptProperties, 'tpl');
 $scriptProperties['outerTpl'] = $modx->getOption('outerTpl', $scriptProperties, '');
@@ -43,8 +44,9 @@ $scriptProperties['rowTpl'] = $modx->getOption('rowTpl', $scriptProperties, '');
 $scriptProperties['emptyBasketTpl'] = $modx->getOption('emptyBasketTpl', $scriptProperties, '');
 $scriptProperties['products'] = $modx->getOption('products', $scriptProperties, '');
 $scriptProperties['product'] = $modx->getOption('product', $scriptProperties, '');
+$scriptProperties['quantity'] = $modx->getOption('quantity', $scriptProperties, 1);
 
-$methods = array('add', 'update', 'subtract', 'empty', 'remove');
+$methods = array('add', 'update', 'subtract', 'empty', 'remove', 'checkout');
 
 if (in_array($scriptProperties['basketAction'], $methods)) {
 	// If there wasn't a basket yet, create one for processing
@@ -55,12 +57,23 @@ if (in_array($scriptProperties['basketAction'], $methods)) {
 	if ($scriptProperties['products'] == '' && $scriptProperties['product'] == '') {
 		$scriptProperties['products'] = false;
 	} elseif ($scriptProperties['products'] == '' && $scriptProperties['product'] != '') {
-		$scriptProperties['products'] = json_encode(array((int) $scriptProperties['product'] => 1));
+		if (!isset($scriptProperties['quantity'])) {
+			$scriptProperties['quantity'] = 1;
+		}
+		
+		$scriptProperties['products'] = json_encode(array((int) $scriptProperties['product'] => $scriptProperties['quantity']));
 	}
 	
-	$products = json_decode($scriptProperties['products'], true);
+	if (!is_array($scriptProperties['products'])) {
+		$products = json_decode($scriptProperties['products'], true);
+	} else {
+		$products = $scriptProperties['products'];
+	}
 	
 	switch($scriptProperties['basketAction']) {
+		case 'checkout':
+			$modx->sendRedirect($modx->makeUrl($vc->getShopSetting('orderProcessResource', $vc->shop->get('id'), '', 'step=1')));
+			break;
 		case 'add':
 			$currentBasket = $basket->get('basket');
 			foreach($products as $productId => $quantity) {
@@ -141,6 +154,9 @@ if (in_array($scriptProperties['basketAction'], $methods)) {
 		$basket->set('basket', $currentBasket);
 	}
 	
+	// Update order
+	$vc->calculateOrderPrice($basket);
+	
 	$basket->save();
 } elseif ($scriptProperties['basketAction'] != '') {
 	return $modx->error->failure('Method does not exist');	
@@ -163,7 +179,10 @@ switch($scriptProperties['return']) {
 	case 'tpl':
 		if (!is_null($basket)) {
 			$basketArray = $basket->get('basket');
-			$items = sizeof($basket->get('basket'));
+			$items = 0;
+			foreach($basketArray as $product) {
+				$items += (int) $product['quantity'];
+			}
 		} else {
 			$basketArray = array();
 			$items = 0;
@@ -180,7 +199,8 @@ switch($scriptProperties['return']) {
 			$returnValue = $vc->parseChunk($scriptProperties['outerTpl'], array(
 				'innerChunk' => $innerChunk,
 				'items' => $items,
-				'order' => $basket
+				'order' => $basket,
+				'checkOutUrl' => $modx->makeUrl($vc->getShopSetting('orderProcessResource', $vc->shop->get('id'), '', 'step=1'))
 			));
 			
 			return $returnValue;

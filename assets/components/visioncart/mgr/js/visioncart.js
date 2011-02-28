@@ -14,6 +14,8 @@ Ext.extend(VisionCart, Ext.Component, {
 		this.config = {};
 		this.tasks = {};
 		
+		this.config.disableMask = false;
+		
 		Ext.onReady(function() {
 			if (Ext.get('visioncart-container')) {
 				this.mainPanel = new Ext.Panel({
@@ -46,15 +48,21 @@ Ext.extend(VisionCart, Ext.Component, {
 		});
 		
 		this.ajax.on('beforerequest', function() {
-			this.showAjaxLoader();
+			if (!this.config.disableMask) {
+				this.showAjaxLoader();
+			}
 		}, this);
 		
 		this.ajax.on('requestcomplete', function() {
-			this.hideAjaxLoader();
+			if (!this.config.disableMask) {
+				this.hideAjaxLoader();
+			}
 		}, this);
 		
 		this.ajax.on('requestexception', function() {
-			this.hideAjaxLoader();
+			if (!this.config.disableMask) {
+				this.hideAjaxLoader();
+			}
 		}, this);
 	},
 	showMessage: function(message, messageStay) {

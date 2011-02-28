@@ -21,21 +21,27 @@ $categories = $modx->getCollection('vcCategory', array(
 
 $sourceCategory = $modx->getObject('vcCategory', $source);
 $sourceCategory->set('parent', $target);
+$sourceCategory->save();
 
-$currentPlace = 0;
-$count = 0;
-foreach($categories as $category) {
-	if ($currentPlace == $targetSort) {
-		$sourceCategory->set('sort', $count);
-		$count++;
-	}
-	
-	$category->set('sort', $count);
-	$category->save();
-	$count++;
-	$currentPlace += 1;
+$sortArray = json_decode($_REQUEST['sortArray'], true);
+$finalSortArray = array();
+foreach($sortArray as $category) {
+	$category = explode('|', $category);
+	$category = explode(':', $category[0]);
+	$category = (int) $category[1];		
+	$finalSortArray[] = $category;
 }
 
-$sourceCategory->save();
+$categoryArray = array();
+foreach($categories as $category) {
+	$categoryArray[$category->get('id')] = $category;	
+}
+
+foreach($finalSortArray as $key => $categoryId) {
+	if (isset($categoryArray[$categoryId])) {
+		$categoryArray[$categoryId]->set('sort', $key);
+		$categoryArray[$categoryId]->save();
+	}
+}
 
 return $modx->error->success('');

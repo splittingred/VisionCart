@@ -12,9 +12,22 @@ if (!$modx->user->isAuthenticated()) {
 	exit();
 }
 
+// Check for minimum order amount
+if ($vc->getShopSetting('enableMinimumOrderAmount') == 1) {
+	if ($order->get('totalorderamountin') <= $vc->getShopSetting('minimumOrderAmount')) {
+		$modx->sendRedirect($modx->makeUrl($modx->resource->get('id'), '', 'step=1'));
+		exit();
+	} 
+}
+
+$vc->fireEvent('vcEventOrderStep2', '', array(
+	'order' => $order
+));
+
 // Get theme configuration
 $scriptProperties['config'] = $modx->getOption('config', $scriptProperties, 'default');
 $config = $vc->getConfigFile($order->get('shopid'), 'orderStep2', null, array('config' => $scriptProperties['config']));
+$config = array_merge($config, $scriptProperties);
 
 $chunkArray = array(
 	'vcOrderStep2' => ''
