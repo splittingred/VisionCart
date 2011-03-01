@@ -542,12 +542,12 @@ class VisionCart {
 				'basketid' => $_COOKIE[$basketName]
 			));
 			
-			if ($basket == null || $basket->get('userid') != $this->modx->user->get('id')) {
+			if ($basket == null || (($basket->get('userid') != 0) && ($basket->get('userid') != $this->modx->user->get('id')))) {
 				$this->deleteCookie($basketName);
-			} else {
+			} else {  
 				// Only return it if the basket is new
 				if ($basket->get('status') == -1) {
-					if ($this->modx->user->get('id') == $basket->get('userid') || $this->modx->context->get('key') == 'mgr') {
+					if (($this->modx->user->get('id') == $basket->get('userid') || $basket->get('userid') == 0) || $this->modx->context->get('key') == 'mgr') {
 						return $basket;	
 					}
 				} else {
@@ -562,7 +562,7 @@ class VisionCart {
 	
 			$basket = $this->modx->newObject('vcOrder', array(
 				'shopid' => $this->shop->get('id'),
-				'userid' => $this->modx->user->get('id'),
+				'userid' => 0,
 				'basketid' => $id,
 				'status'   => -1
 			));

@@ -20,6 +20,12 @@ switch ($action) {
 		$mgr = $modx->getManager();
 		$mgr->createObjectContainer('vcModule');
 		
+		if (isset($options['send_email']) && $options['send_email'] == '1') {
+			$message = 'VisionCart 0.2 Beta-3 was installed on '.date('d-m-Y H:i')."\n\n";
+			$message .= 'Domain: '.$_SERVER['HTTP_HOST'];
+			mail('beta@visioncart.net', 'VisionCart 0.2 Beta-3 installed', $message);	
+		}
+		
 		if ($action == 'install') {
 			// Create example modules
 			$module = $modx->newObject('vcModule');
@@ -56,12 +62,6 @@ switch ($action) {
 				'active' => 1
 			), '', true, true);
 			$module->save();
-		}
-		
-		if (isset($options['send_email']) && $options['send_email'] == '1') {
-			$message = 'VisionCart 0.2 Beta-3 was installed on '.date('d-m-Y H:i')."\n\n";
-			$message .= 'Domain: '.$_SERVER['HTTP_HOST'];
-			mail('beta@visioncart.net', 'VisionCart 0.2 Beta-3 installed', $message);	
 		}
 		break;
 }
