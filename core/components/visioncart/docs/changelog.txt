@@ -1,3 +1,9 @@
+Version 0.2.1 BETA-3
+----------------------------------------------------------------------------------
+-----   Fixed: Basket empty after login
+
+Version 0.2.0 BETA-3
+----------------------------------------------------------------------------------
 -----	Added: Empty cache parameters for products, categories and shops
 -----   Added: Better sorting options for categories and products (faster, no more reloads)
 -----   Added: Extended vcMoney function modifiers
