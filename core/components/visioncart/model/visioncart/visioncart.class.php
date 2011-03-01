@@ -35,7 +35,7 @@ class VisionCart {
         $path = array(
 			'core' => $this->modx->getOption('visioncart.core_path', null, $this->modx->getOption('core_path', null, MODX_CORE_PATH)),
 			'assets' => $this->modx->getOption('visioncart.assets_url', null, $this->modx->getOption('assets_url', null, MODX_ASSETS_URL)),
-			'assetsBase' => $this->modx->getOption('visioncart.assets_path', null, $this->modx->getOption('base_path', null, MODX_BASE_PATH).substr($this->modx->getOption('assets_url', null, MODX_ASSETS_URL), 1))
+			'assetsBase' => $this->modx->getOption('visioncart.assets_path', null, $this->modx->getOption('assets_path', null, MODX_ASSETS_PATH))
 		);
 		
 		$query = $this->modx->newQuery('modSystemSetting');
@@ -71,8 +71,7 @@ class VisionCart {
             'assetsUrl' => $path['assets'].'components/visioncart/',
             'connectorUrl' => $path['assets'].'components/visioncart/connector.php'
         ), $config);
-        
-	
+
 		unset($modx, $path, $settings, $setting, $query, $stack, $shopId, $shop);
 
 		if (isset($this->config['context']) && $this->config['context'] != '') {
@@ -157,8 +156,14 @@ class VisionCart {
            		
            		$config['requestURL'] = $this->modx->getOption('requestURL', $config, $_SERVER['REQUEST_URI']);
            		$config['method'] = $this->modx->getOption('method', $config, 'resource');
-           		
            		$config['requestURL'] = str_replace($this->modx->getOption('site_url'), '', $config['requestURL']);
+           		
+           		// Remove subdir
+           		$baseUrl = $this->modx->getOption('base_url');
+           		if (substr($config['requestURL'], 0, strlen($baseUrl)) == $baseUrl) {
+           			$config['requestURL'] = substr($config['requestURL'], strlen($baseUrl));
+           		}
+           		
            		$config['event'] = $this->modx->getOption('event', $config, false);
            		
            		if ($config['method'] == 'ajax') {
