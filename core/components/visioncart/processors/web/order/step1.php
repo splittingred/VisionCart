@@ -58,7 +58,8 @@ if (($order->get('basket') == '' || !is_array($order->get('basket')) || sizeof($
 } else {
 	foreach($basket as $product) {
 		$product['display']['price'] = $vc->calculateProductPrice($product, true);
-		$product['display']['price']['subtotal'] = ($product['display']['price']['in'] * (int) $product['quantity']);
+		$product['display']['price']['subtotal']['in'] = ($product['display']['price']['in'] * (int) $product['quantity']);
+		$product['display']['price']['subtotal']['ex'] = ($product['display']['price']['ex'] * (int) $product['quantity']);
 		$content .= $vc->parseChunk($chunkArray['vcBasketRow'], $product, array(
 			'isChunk' => true
 		));

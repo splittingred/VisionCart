@@ -4,7 +4,7 @@ if (!$modx->user->isAuthenticated('mgr')) return $modx->error->failure($modx->le
 
 $prodId = (int) $_REQUEST['prodid'];
 $visionCart = $modx->visioncart;
-$targetDir = $modx->getOption('base_path').'assets/components/visioncart/web/images/products/';
+$targetDir = $visionCart->config['assetsBasePath'].'web/images/products/';
 
 $product = $modx->getObject('vcProduct', $prodId);
 

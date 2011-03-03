@@ -597,6 +597,9 @@ class VisionCart {
 				'outputTo' => 'file',
 				'fileName' => $tempFile
 			)); 
+			header('Content-type: application/pdf');
+			echo file_get_contents($tempFile);
+			exit();
 
 			$orderPdf = array(
 				'path' => $tempFile,
@@ -1021,13 +1024,18 @@ class VisionCart {
 			foreach($basket as $product) {
 				$productObject = $this->modx->getObject('vcProduct', $product['id']);
 				$taxCategory = $productObject->getOne('TaxCategory');
-
+				$productPrice = $this->calculateProductPrice($product, true);
+				
+				$subtotal = array(
+					'ex' => $productPrice['ex'] * $product['quantity'],
+					'in' => $productPrice['in'] * $product['quantity']
+				);
+				
 				$productContent .= $this->parseChunk($productRowTpl, array_merge($placeHolders, array(
 					'tax' => $taxCategory->toArray(),
 					'product' => array_merge($product, array('display' => array(
-						'pricein' => $this->money((($product['price'] / 100) * $taxCategory->get('pricechange')) + $product['price'], array('shopId' => $order->get('shopid'))),
-						'priceex' => $this->money($product['price'], array('shopId' => $order->get('shopid'))),
-						'subtotal' => $this->money(((($product['price'] / 100) * $taxCategory->get('pricechange')) + $product['price']) * $product['quantity'], array('shopId' => $order->get('shopid')))
+						'price' => $productPrice,
+						'subtotal' => $subtotal
 					)))
 				)), array('isChunk' => true));
 			}
@@ -1555,7 +1563,7 @@ class VisionCart {
     	$query = $this->modx->newQuery('vcCategory', $dependencies);
     	$query->sortby('sort', 'ASC');
     	
-    	$categories = $this->modx->getCollection('vcCategory', $dependencies);
+    	$categories = $this->modx->getCollection('vcCategory', $query);
     	
     	$output = array();
     	foreach($categories as $category) {
@@ -1687,7 +1695,7 @@ class VisionCart {
      * @return bool true
      */
     public function removeCategory($id) {
-    	$targetDir = $this->modx->getOption('base_path').'assets/components/visioncart/web/images/products/';
+    	$targetDir = $this->config['assetsBasePath'].'web/images/products/';
     	
     	$categories = $this->modx->getCollection('vcCategory', array(
     		'parent' => $id
@@ -2256,7 +2264,7 @@ class VisionCart {
  		
  		$categories = $this->modx->getCollection('vcCategory', $query);
  		
- 		$config['excludeCategories'] = explode(',', $config['excludeCategories']);
+ 		$config['excludeCategories'] = explode(',', (string) $config['excludeCategories']);
  		$config['excludeCategories'][] = $config['taxCategory'];
  		
  		$config['lastItem'] = $this->modx->getOption('lastItem', $config, end($categories));

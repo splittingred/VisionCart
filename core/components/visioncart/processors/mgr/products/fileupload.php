@@ -3,7 +3,7 @@
 if (!$modx->user->isAuthenticated('mgr')) return $modx->error->failure($modx->lexicon('permission_denied'));
 
 // Receive REQUEST variables
-$targetDir = $modx->getOption('base_path').'assets/components/visioncart/web/images/products/';
+$targetDir = $modx->visioncart->config['assetsBasePath'].'web/images/products/';
 $visionCart = $modx->visioncart;
 $sourcePath = $_FILES['image']['tmp_name'];
 $fileExtension = strtolower(substr($_FILES['image']['name'], -3));
@@ -28,6 +28,8 @@ if (empty($currentPictures)) {
 	}	
 }
 
+echo $targetDir;
+
 // Check the extension
 switch($fileExtension) {
 	case 'jpg':
@@ -43,7 +45,8 @@ switch($fileExtension) {
 
 // Fetch the current thumbnail settings and create all thumbs
 $thumbnailArray = $visionCart->getThumbnailSettings($shopId);
-
+echo 'test';
+print_r($thumbnailArray);
 foreach($thumbnailArray as $thumb) {
 	$imageSize = getimagesize($sourcePath);
 	list($imageWidth, $imageHeight) = $imageSize;

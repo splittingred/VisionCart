@@ -538,6 +538,9 @@ var vcPageProduct = Ext.extend(Ext.Panel, {
 										action: 'mgr/products/saveoptionvalue'
 									}
 									
+									vcCore.stores.optionvalues.baseParams.optionId = '';
+									vcCore.stores.optionvalues.load([], false);
+									
 									vcCore.ajax.request({
 										url: vcCore.config.connectorUrl,
 										params: postData,
@@ -874,7 +877,7 @@ var vcPageProduct = Ext.extend(Ext.Panel, {
 													fn: function(field) {
 														this.newProductForm.getForm().getEl().set({
 															target: 'file-upload', 
-															action: '/assets/components/visioncart/connector.php?action=mgr/products/fileupload&HTTP_MODAUTH='+vcCore.siteId+'&shopid='+vcCore.getUrlVar('shopid')
+															action: vcCore.config.assetsUrl+'connector.php?action=mgr/products/fileupload&HTTP_MODAUTH='+vcCore.siteId+'&shopid='+vcCore.getUrlVar('shopid')
 														});
 														this.newProductForm.getForm().getEl().dom.submit();
 														

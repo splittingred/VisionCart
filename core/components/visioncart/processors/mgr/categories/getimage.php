@@ -3,8 +3,8 @@
 if (!$modx->user->isAuthenticated('mgr')) return $modx->error->failure($modx->lexicon('permission_denied'));
 
 $visionCart = $modx->visioncart;
-$targetDir = $modx->getOption('base_path').'assets/components/visioncart/web/images/categories/';
-$htmlPath = '/assets/components/visioncart/web/images/categories/';
+$targetDir = $modx->visioncart->config['assetsBasePath'].'web/images/categories/';
+$htmlPath = $modx->visioncart->config['assetsUrl'].'web/images/categories/';
 $categoryId = (int) $_REQUEST['id'];
 $shopId = (int) $_REQUEST['shopid'];
 

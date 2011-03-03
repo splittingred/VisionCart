@@ -624,7 +624,7 @@ var vcPageCategories = Ext.extend(Ext.Panel, {
 													fn: function(field) {
 														this.newCategoryForm.getForm().getEl().set({
 															target: 'file-upload', 
-															action: '/assets/components/visioncart/connector.php?action=mgr/categories/fileupload&HTTP_MODAUTH='+vcCore.siteId+'&shopid='+vcCore.getUrlVar('shopid')
+															action: vcCore.config.assetsUrl+'connector.php?action=mgr/categories/fileupload&HTTP_MODAUTH='+vcCore.siteId+'&shopid='+vcCore.getUrlVar('shopid')
 														});
 														this.newCategoryForm.getForm().getEl().dom.submit();
 														

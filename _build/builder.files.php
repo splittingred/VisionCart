@@ -5,13 +5,4 @@ $vehicle->resolve('file', array(
 	'target' => 'return MODX_CORE_PATH.\'components/\';'
 ));
 
-$vehicle->resolve('file', array(
-	'source' => $sources['source_assets'],
-	'target' => 'return MODX_ASSETS_PATH.\'components/\';'
-));
-
-$vehicle->resolve('php',array(
-    'source' => $sources['resolvers'].'postactions.resolver.php',
-));
-
 $builder->putVehicle($vehicle);
