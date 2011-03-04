@@ -597,9 +597,6 @@ class VisionCart {
 				'outputTo' => 'file',
 				'fileName' => $tempFile
 			)); 
-			header('Content-type: application/pdf');
-			echo file_get_contents($tempFile);
-			exit();
 
 			$orderPdf = array(
 				'path' => $tempFile,
@@ -3213,7 +3210,7 @@ class VisionCart {
      * @param bool $updateLastOrderNumber Whether to set this as the "last" generated bill number
      * @return string The generated order number
      */
-    public function generateOrderNumber($updateLastOrderNumber=true, $config) {
+    public function generateOrderNumber($updateLastOrderNumber=true, $config=array()) {
     	if (isset($config['shopId'])) {
     		$shop = $this->modx->getObject('vcShop', (int) $config['shopId']);
     	} else {

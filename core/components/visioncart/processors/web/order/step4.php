@@ -113,7 +113,10 @@ foreach($paymentModules as $paymentModule) {
 	
 	$paymentModuleArray[] = $paymentModule->get('id');
 	$paymentModule = $paymentModule->toArray();
-	$paymentModule = array_merge($paymentModule, $returnValue);
+	
+	if (is_array($returnValue)) {
+		$paymentModule = array_merge($paymentModule, $returnValue);
+	}
 
 	$paymentModule['selected'] = '';
 	if ($order->get('paymentid') == $paymentModule['id'] && $order->get('paymentid') != '') {

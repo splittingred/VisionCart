@@ -1,22 +1,37 @@
-Version 0.2.1 BETA-3
-----------------------------------------------------------------------------------
------   Fixed: Basket empty after login
++--------------------+
+| Version 0.5.0 RC-1 |
++--------------------+
+#....	Added: Tierpricing for categories and products
 
-Version 0.2.0 BETA-3
-----------------------------------------------------------------------------------
------	Added: Empty cache parameters for products, categories and shops
------   Added: Better sorting options for categories and products (faster, no more reloads)
------   Added: Extended vcMoney function modifiers
------   Added: Ability to select last selected module (shipping / payment)
------   Added: More events
------   Added: Free shipping boundary
------   Added: Minimum order amount
+#....	Fixed: Subdir installation bugs
+#....	Fixed: A lot of wrong path assignments
+#....	Fixed: In and Ex VAT availability in order steps
+#....	Fixed: Bug in option assignment (GUI only)
+
+#....	Changed: Reduced package size (removed unnecessary files)
+#....	Changed: Some of the price placeholders to match eachother
+
++----------------------+
+| Version 0.2.1 BETA-3 |
++----------------------+
+#....   Fixed: Basket empty after login
+
++----------------------+
+| Version 0.2.0 BETA-3 |
++----------------------+
+#....	Added: Empty cache parameters for products, categories and shops
+#....   Added: Better sorting options for categories and products (faster, no more reloads)
+#....   Added: Extended vcMoney function modifiers
+#....   Added: Ability to select last selected module (shipping / payment)
+#....   Added: More events
+#....   Added: Free shipping boundary
+#....   Added: Minimum order amount
 #3573	Added: Multiple config files for snippets
 #3606	Added: Make it possible to use , instead of . in price field
 
------   Fixed: Added the display.price.in and ex to all snippets showing products
------   Fixed: Some default theme errors
------   Fixed: Category and product sorting didn't save correctly
+#....   Fixed: Added the display.price.in and ex to all snippets showing products
+#....   Fixed: Some default theme errors
+#....   Fixed: Category and product sorting didn't save correctly
 #3662   Fixed: Order process unsafe
 #3584	Fixed: Shopping cart empty after login
 #3811	Fixed: rename extra fields in gui to custom fields to match db
@@ -31,3 +46,8 @@ Version 0.2.0 BETA-3
 #3670	Fixed: basketAdd ajax request does not receive success response
 #3882	Fixed: vieworder.php does not initialise shop variable correctly
 #3603	Fixed: vcGetCategories showing tax category
+
++----------------------+
+| Version 0.1.0 BETA-1 |
++----------------------+
+#....	Initial release...

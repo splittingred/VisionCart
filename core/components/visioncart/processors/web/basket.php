@@ -180,8 +180,10 @@ switch($scriptProperties['return']) {
 		if (!is_null($basket)) {
 			$basketArray = $basket->get('basket');
 			$items = 0;
-			foreach($basketArray as $product) {
-				$items += (int) $product['quantity'];
+			if (is_array($basketArray) && !empty($basketArray)) {
+				foreach($basketArray as $product) {
+					$items += (int) $product['quantity'];
+				}
 			}
 		} else {
 			$basketArray = array();
