@@ -119,7 +119,10 @@ foreach($shippingModules as $shippingModule) {
 	
 	$shippingModuleArray[] = $shippingModule->get('id');
 	$shippingModule = $shippingModule->toArray();
-	$shippingModule = array_merge($shippingModule, $returnValue);
+	
+	if (is_array($returnValue)) {
+		$shippingModule = array_merge($shippingModule, $returnValue);
+	}
 
 	$shippingModule['selected'] = '';
 	if ($order->get('shippingid') == $shippingModule['id'] && $order->get('shippingid') != '') {

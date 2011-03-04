@@ -26,8 +26,8 @@ $internal = array(
 );
 
 $path = array(
-	'url' => $modx->getOption('site_url').'assets/components/visioncart/web/images/products/',
-	'abs' => $modx->getOption('base_path').'assets/components/visioncart/web/images/products/'
+	'url' => $vc->config['assetsUrl'].'web/images/products/',
+	'abs' => $vc->config['assetsBasePath'].'web/images/products/'
 );
 
 // Load the shop for the images config
@@ -52,10 +52,6 @@ $thumbnails = $vc->getThumbnailSettings($shop['id']);
 $product = $vc->getProduct($scriptProperties['id'], array(
 	'asArray' => true
 ));
-
-if ($product == null) {
-	return '';	
-}
 
 if (!empty($product) && isset($product['pictures']) && !empty($product['pictures'])) {
 	$output = '';
@@ -84,7 +80,7 @@ if (!empty($product) && isset($product['pictures']) && !empty($product['pictures
 			$output .= $vc->parseChunk($scriptProperties['tpl'], array(
 				'src' => $path['url'].$thumbnail['prefix'].$image,
 				'title' => $product['name'],
-				'alt' => $product['description'],
+				'alt' => $product['name'],
 				'rel' => $scriptProperties['rel'],
 				'width' => isset($dimensions) ? $dimensions[0] : '',
 				'height' => isset($dimensions) ? $dimensions[1] : '',

@@ -4,9 +4,9 @@ $params = array();
 
 $params['vcOrderFinalBasketRow'] = '@CODE:<tr>
 	<td>[[+product.name]]</td>
-	<td>[[+display.pricein]]</td>
+	<td>[[+display.price.in:vcMoney]]</td>
 	<td>[[+product.quantity]]</td>
-	<td>[[+display.subtotal]]</td>
+	<td>[[+display.subtotal.in:vcMoney]]</td>
 </tr>';
 
 $params['vcOrderFinalBasketWrapper'] = '@CODE:<table width="100%">

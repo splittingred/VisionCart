@@ -4,6 +4,26 @@ if (!$modx->user->isAuthenticated('mgr')) return $modx->error->failure($modx->le
 
 $optionArray = (array) json_decode($_REQUEST['formData']);
 
+if ($optionArray['inputsnippet'] != '') {
+	// Get the snippet
+	$snippet = $modx->getObject('modSnippet', (int) $optionArray['inputsnippet']);
+	if ($snippet != null) {
+		$optionArray['inputsnippet'] = $snippet->get('name');
+	} else {
+		$optionArray['inputsnippet'] = '';
+	}	
+}
+
+if ($optionArray['outputsnippet'] != '') {
+	// Get the snippet
+	$snippet = $modx->getObject('modSnippet', (int) $optionArray['outputsnippet']);
+	if ($snippet != null) {
+		$optionArray['outputsnippet'] = $snippet->get('name');
+	} else {
+		$optionArray['outputsnippet'] = '';
+	}	
+}
+
 if (isset($optionArray['id']) && !empty($optionArray['id']) && $optionArray['id'] != 0) {
 	$option = $modx->getObject('vcOption', $optionArray['id']);
 	$option->fromArray(array(

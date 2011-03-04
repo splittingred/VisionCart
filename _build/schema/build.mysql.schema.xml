@@ -52,6 +52,7 @@
 		<field key="customfields" dbtype="text" phptype="json" null="false" default="" />
 		<field key="pricechange" dbtype="decimal" precision="8,2" phptype="float" null="false" default="" />
 		<field key="pricepercent" dbtype="tinyint" precision="1" attributes="unsigned" phptype="boolean" null="false" default="0" />
+		<field key="tierprice" dbtype="text" phptype="json" null="false" default="" />
 		<field key="active" dbtype="tinyint" precision="1" attributes="unsigned" phptype="boolean" null="false" default="0" />
 	
 		<composite alias="ProductCategory" class="vcProductCategory" local="id" foreign="categoryid" cardinality="many" owner="local" />
@@ -87,6 +88,7 @@
 		<field key="customfields" dbtype="text" phptype="json" null="false" default="" />
 		<field key="pictures" dbtype="text" phptype="json" null="false" default="" />
 		<field key="stock" dbtype="int" phptype="integer" precision="8" null="false" default="" />
+		<field key="tierprice" dbtype="text" phptype="json" null="false" default="" />
 		<field key="active" dbtype="tinyint" precision="1" attributes="unsigned" phptype="integer" null="false" default="0" />
 
 		<composite alias="ProductOption" class="vcProductOption" local="id" foreign="productid" cardinality="many" owner="local" />

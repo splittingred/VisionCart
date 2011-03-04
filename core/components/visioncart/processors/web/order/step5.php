@@ -35,6 +35,9 @@ $vc->fireEvent('vcEventOrderStep5', '', array(
 	'order' => $order
 ));
 
+// Calculate order amount
+$vc->calculateOrderPrice($order);
+
 // Get theme configuration
 $scriptProperties['config'] = $modx->getOption('config', $scriptProperties, 'default');
 $config = $vc->getConfigFile($order->get('shopid'), 'orderStep5', null, array('config' => $scriptProperties['config']));
@@ -131,13 +134,18 @@ if (is_array($basket)) {
 		$taxCategory = $productObject->getOne('TaxCategory');
 		$productPrice = $vc->calculateProductPrice($product, true);
 		
+		$price = $productPrice;
+		$subtotal = array(
+			'in' => $productPrice['in'] * $product['quantity'],
+			'ex' => $productPrice['ex'] * $product['quantity']
+		);
+		
 		$temporaryContent .= $vc->parseChunk($chunkArray['vcOrderFinalBasketRow'], array_merge($chunkParameters, array(
 			'tax' => $taxCategory->toArray(),
 			'product' => $product,
 			'display' => array(
-				'pricein' => $vc->money($productPrice['in']),
-				'priceex' => $vc->money($productPrice['ex']),
-				'subtotal' => $vc->money($productPrice['in'] * $product['quantity'])
+				'price' => $price,
+				'subtotal' => $subtotal
 			)
 		)), array('isChunk' => true));
 	}

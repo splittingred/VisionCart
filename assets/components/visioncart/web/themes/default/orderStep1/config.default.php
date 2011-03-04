@@ -10,7 +10,7 @@ $params['vcBasketRow'] = '@CODE:<tr>
 	<td>[[+name]]<br />[[+description]]</td>
 	<td><input id="vc-order-basket-product[[+id]]" name="products[[[+id]]]" type="text" value="[[+quantity]]" /></td>
 	<td>[[+display.price.in:vcMoney]]</td>
-	<td>[[+display.price.subtotal:vcMoney]]</td>
+	<td>[[+display.price.subtotal.in:vcMoney]]</td>
 </tr> ';
 
 $params['vcBasketWrapper'] = '@CODE:<form action="" method="post"><table width="100%">

@@ -19,6 +19,7 @@ $xpdo_meta_map['vcProduct']= array (
     'customfields' => '',
     'pictures' => '',
     'stock' => 0,
+    'tierprice' => '',
     'active' => 0,
   ),
   'fieldMeta' => 
@@ -144,6 +145,13 @@ $xpdo_meta_map['vcProduct']= array (
       'precision' => '8',
       'null' => false,
       'default' => 0,
+    ),
+    'tierprice' => 
+    array (
+      'dbtype' => 'text',
+      'phptype' => 'json',
+      'null' => false,
+      'default' => '',
     ),
     'active' => 
     array (

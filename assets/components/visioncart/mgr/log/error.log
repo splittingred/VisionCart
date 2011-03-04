@@ -1,2 +1,0 @@
-[Tue, 02 Nov 2010 15:25:19 +0000] - (1) - Test message. File: "C:\wamp\www\core\components\visioncart\processors\mgr\products\updatecategory.php" @ line: 25
-[Tue, 02 Nov 2010 15:30:28 +0000] - (2) - Could not find SKU child link for vcProductCategory removal. FILE: "C:\wamp\www\core\components\visioncart\processors\mgr\products\updatecategory.php" @ LINE: 79

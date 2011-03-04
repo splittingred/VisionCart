@@ -6,6 +6,7 @@ if ($options[xPDOTransport::PACKAGE_ACTION] == xPDOTransport::ACTION_UPGRADE) {
 	$action = 'install';	
 }
 
+$success = false;
 switch ($action) {  
 	case 'upgrade':
 	case 'install':
@@ -21,47 +22,55 @@ switch ($action) {
 		$mgr->createObjectContainer('vcModule');
 		
 		if (isset($options['send_email']) && $options['send_email'] == '1') {
-			$message = 'VisionCart 0.2 Beta-3 was installed on '.date('d-m-Y H:i')."\n\n";
+			$message = 'VisionCart 0.5 RC-1 was installed on '.date('d-m-Y H:i')."\n\n";
 			$message .= 'Domain: '.$_SERVER['HTTP_HOST'];
 			mail('beta@visioncart.net', 'VisionCart 0.2 Beta-3 installed', $message);	
 		}
 		
 		if ($action == 'install') {
 			// Create example modules
-			$module = $modx->newObject('vcModule');
-			$module->fromArray(array(
-				'id' => 1,
-				'type' => 'payment',
-				'name' => 'example',
-				'description' => 'Example payment module',
+			$module = $modx->getObject('vcModule', array(
 				'controller' => 'example/index.php',
-				'config' => array(
-					'paymentCountry' => 'all',
-					'paymentMaximimumAmount' => 0,
-					'paymentPercentage' => 0,
-					'paymentCosts' => 5
-				),
-				'active' => 1
-			), '', true, true);
-			$module->save();
-			
-			$module = $modx->newObject('vcModule');
-			$module->fromArray(array(
-				'id' => 2,
-				'type' => 'shipping',
-				'name' => 'example',
-				'description' => 'Example shipping module',
-				'controller' => 'example/index.php',
-				'config' => array(
-					'shippingCountry' => 'all',
-					'shippingMinimumWeight' => 0,
-					'shippingMaximumWeight' => 0,
-					'shippingPercentage' => 0,
-					'shippingCosts' => 5
-				),
-				'active' => 1
-			), '', true, true);
-			$module->save();
+				'type' => 'payment'
+			));
+			if ($module == null) {
+				$module = $modx->newObject('vcModule');
+				$module->fromArray(array(
+					'id' => 1,
+					'type' => 'payment',
+					'name' => 'example',
+					'description' => 'Example payment module',
+					'controller' => 'example/index.php',
+					'config' => array(
+						'paymentCountry' => 'all',
+						'paymentMaximimumAmount' => 0,
+						'paymentPercentage' => 0,
+						'paymentCosts' => 5
+					),
+					'active' => 1
+				), '', true, true);
+				$module->save();
+				
+				$module = $modx->newObject('vcModule');
+				$module->fromArray(array(
+					'id' => 2,
+					'type' => 'shipping',
+					'name' => 'example',
+					'description' => 'Example shipping module',
+					'controller' => 'example/index.php',
+					'config' => array(
+						'shippingCountry' => 'all',
+						'shippingMinimumWeight' => 0,
+						'shippingMaximumWeight' => 0,
+						'shippingPercentage' => 0,
+						'shippingCosts' => 5
+					),
+					'active' => 1
+				), '', true, true);
+				$module->save();
+			}
 		}
+		
+		$success = true;
 		break;
 }

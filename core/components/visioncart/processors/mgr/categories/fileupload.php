@@ -3,7 +3,7 @@
 if (!$modx->user->isAuthenticated('mgr')) return $modx->error->failure($modx->lexicon('permission_denied'));
 
 // Receive REQUEST variables
-$targetDir = $modx->getOption('base_path').'assets/components/visioncart/web/images/categories/';
+$targetDir = $modx->visioncart->config['assetsBasePath'].'web/images/categories/';
 $visionCart = $modx->visioncart;
 $sourcePath = $_FILES['image']['tmp_name'];
 $fileExtension = strtolower(substr($_FILES['image']['name'], -3));

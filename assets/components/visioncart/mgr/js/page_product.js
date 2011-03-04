@@ -62,6 +62,58 @@ var vcPageProduct = Ext.extend(Ext.Panel, {
 			]
 		});
 		
+		this.tierGrid = new Ext.grid.GridPanel({
+			store: vcCore.stores.productTierPricing,
+			loadMask: true,
+			viewConfig: {
+	            forceFit: true,
+	            enableRowBody: true,
+	            autoFill: true,
+	            deferEmptyText: false,
+	            showPreview: true,
+	            scrollOffset: 0,
+	            emptyText: _('ext_emptymsg')
+	        },
+			autoHeight: true,
+		    columns: [
+	            {
+	                xtype: 'gridcolumn',
+	                dataIndex: 'quantity',
+	                header: 'Quantity',
+	                renderer: function(value) {
+	                	return value + ' and above...';
+	                }
+	            },
+	            {
+	                xtype: 'gridcolumn',
+	                dataIndex: 'amount',
+	                header: 'Amount'
+	            },
+	            {
+	                xtype: 'gridcolumn',
+	                dataIndex: 'modifier',
+	                header: 'Modifier',
+	                renderer: function(value) {
+	                	if (value == 1) {
+	                		return 'By percentage';	
+	                	}	
+	                	return 'By value';
+	                }
+	            }
+	        ],
+		    listeners: {
+		    	rowContextMenu: {
+		    		scope: this,
+		    		fn: function(grid, rowIndex, event) {
+		    			// Set the database ID in the menu's base params so we can access it when an action is performed
+		    			this.tierMenu.baseParams.quantity = grid.getStore().getAt(rowIndex).get('quantity');
+		    			this.tierMenu.showAt(event.xy);
+		    			event.stopEvent();
+		    		}
+		    	}
+		    }		    
+		});
+		
 		// Right click menu for the options
 		this.optionMenu = new Ext.menu.Menu({
 			baseParams: {
@@ -101,6 +153,44 @@ var vcPageProduct = Ext.extend(Ext.Panel, {
 							}
 						}
 					}
+				}
+			]
+		});
+		
+		this.tierMenu = new Ext.menu.Menu({
+			baseParams: {
+				quantity: ''
+			},
+			items: [
+				{
+					text: 'Remove',
+					scope: this,
+					handler: function() {
+						Ext.Msg.show({
+							title: 'Remove tier?',
+							msg: 'Are you sure you want to remove the specified tier?',
+							buttons: Ext.Msg.YESNO,
+							fn: function(response) {
+								if (response == 'yes') {
+									vcCore.ajax.request({
+										url: vcCore.config.connectorUrl,
+										params: {
+											action: 'mgr/products/removetier',
+											productId: vcCore.getUrlVar('prodid'),
+											quantity: this.tierMenu.baseParams.quantity
+										},
+										scope: this,
+										success: function(response) {
+											this.tierGrid.getStore().load();
+											vcCore.showMessage('Tier removed.');
+										}
+									});
+								}
+							},
+							icon: Ext.MessageBox.QUESTION,
+							scope: this
+						});
+					}	
 				}
 			]
 		});
@@ -538,6 +628,9 @@ var vcPageProduct = Ext.extend(Ext.Panel, {
 										action: 'mgr/products/saveoptionvalue'
 									}
 									
+									vcCore.stores.optionvalues.baseParams.optionId = '';
+									vcCore.stores.optionvalues.load([], false);
+									
 									vcCore.ajax.request({
 										url: vcCore.config.connectorUrl,
 										params: postData,
@@ -874,7 +967,7 @@ var vcPageProduct = Ext.extend(Ext.Panel, {
 													fn: function(field) {
 														this.newProductForm.getForm().getEl().set({
 															target: 'file-upload', 
-															action: '/assets/components/visioncart/connector.php?action=mgr/products/fileupload&HTTP_MODAUTH='+vcCore.siteId+'&shopid='+vcCore.getUrlVar('shopid')
+															action: vcCore.config.assetsUrl+'connector.php?action=mgr/products/fileupload&HTTP_MODAUTH='+vcCore.siteId+'&shopid='+vcCore.getUrlVar('shopid')
 														});
 														this.newProductForm.getForm().getEl().dom.submit();
 														
@@ -974,6 +1067,105 @@ var vcPageProduct = Ext.extend(Ext.Panel, {
 								}
 							]
 						},
+						{
+							title: 'Tier pricing',
+							layout: 'form',
+							autoHeight: true,
+							items: [
+								{
+									border: false,
+									plain: true,
+									html: '<i>Please note: If this product is in a category that has a tier price configuration, this configuration will become obsolete when you add a tier at product level for this product.</i><br /><br />'	
+								},
+								{
+									xtype: 'fieldset',
+									title: 'Add tier',
+									collapsible: true,
+									items: [
+										{
+											xtype: 'compositefield',
+											items: [
+												{
+													xtype: 'textfield',
+													fieldLabel: 'Quantity',
+													width: 50,
+													name: 'tier-quantity',
+													id: 'tier-quantity'
+												},
+												{
+													border: false,
+													plain: true,
+													unstyled: true,
+													html: '<div style="line-height: 22px;">and above...</div>'
+												}
+											]
+										},
+										{
+											xtype: 'textfield',
+											fieldLabel: 'Amount (ex)',
+											name: 'tier-amount',
+											id: 'tier-amount'
+										},
+										{
+											xtype: 'combo',
+											displayField: 'option',
+											valueField: 'value',
+											description: 'If you choose percentage, the price will lower by percentage. If you choose by value, the price will lower by the entered amount of money.',
+											width: 150,
+											forceSelection: true,
+											store: new Ext.data.SimpleStore({
+										        fields: ['option', 'value'],
+										        data: [
+										        	['By value', 0],
+										        	['By percentage', 1]
+										        ]
+										    }),
+											mode: 'local',
+											value: 0,
+											triggerAction: 'all',
+											fieldLabel: 'Modifier',
+											id: 'tier-modifier'
+										},
+										{
+											xtype: 'button',
+											text: 'Add',
+											scope: this,
+											handler: function() {
+												var object = {
+													quantity: Ext.getCmp('tier-quantity').getValue(),
+													amount: Ext.getCmp('tier-amount').getValue(),
+													modifier: Ext.getCmp('tier-modifier').getValue()
+												};
+												
+												if (object.quantity == '' || object.amount == '') {
+													Ext.alert('Please enter quantity and amount...');	
+													return false;
+												}
+												
+												var objectString = Ext.encode(object);
+												
+									    		vcCore.ajax.request({
+													url: vcCore.config.connectorUrl,
+													params: {
+														action: 'mgr/products/addtier',
+														productId: vcCore.getUrlVar('prodid'),
+														tier: objectString
+													},
+													scope: this,
+													success: function(response) {
+														Ext.getCmp('tier-quantity').setValue('');
+														Ext.getCmp('tier-amount').setValue('');
+														// Refresh the tier store
+														this.tierGrid.getStore().load();
+													}
+												});
+											}
+										}
+									]	
+								},
+								this.tierGrid
+							]
+						},
 						this.attributesTab
 					]
 				}
@@ -1009,6 +1201,9 @@ var vcPageProduct = Ext.extend(Ext.Panel, {
 			});
 		}, this);
 				
+		vcCore.stores.productTierPricing.baseParams.productId = vcCore.getUrlVar('prodid');
+		vcCore.stores.productTierPricing.load();
+		
 		// The mainpanel always has to be in the "this.mainPanel" variable
 		this.mainPanel = new Ext.Panel({
 			renderTo: 'visioncart-content',
@@ -1030,7 +1225,7 @@ var vcPageProduct = Ext.extend(Ext.Panel, {
 				action: 'mgr/products/getimages',
 				id: vcCore.getUrlVar('prodid'),
 				shopid: vcCore.getUrlVar('shopid')
-			},
+			}, 
 			scope: this,
 			success: function(response) {
 				var images = response.responseText;

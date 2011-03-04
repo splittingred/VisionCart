@@ -102,6 +102,6 @@ $params['taxRowTpl'] = '@CODE:<tr>
 $params['productRowTpl'] = '@CODE:<tr>
 	<td>[[+product.name]]</td>
 	<td>[[+product.quantity]]</td>
-	<td>[[+product.display.pricein]]</td>
-	<td>[[+product.display.subtotal]]</td>
+	<td>[[+product.display.price.in:vcMoney:shopId==`[[+order.shopid]]`]]</td>
+	<td>[[+product.display.subtotal.in:vcMoney:shopId==`[[+order.shopid]]`]]</td>
 </tr>';  
