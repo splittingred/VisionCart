@@ -32,7 +32,6 @@ if (!isset($scriptProperties['rowTpl']) || $scriptProperties['rowTpl'] == '') {
 	return '';
 }
 
-
 /*$tpl = $modx->getOption('tpl', $scriptProperties, 'vcProductOptions');
 $rowTpl = $modx->getOption('rowTpl', $scriptProperties, 'vcProductOptionsRow');
 $return = $modx->getOption('return', $scriptProperties, 'tpl');
@@ -71,7 +70,6 @@ if (isset($_GET['option'])) {
 		$scriptProperties['selectedValues'][$value->get('optionid')] = $value->get('valueid');
 	}
 }
-
 
 $query = $modx->newQuery('vcProductOption', array(
 	'productid' => $productId
@@ -140,34 +138,19 @@ foreach($skus as $sku) {
 // Prepare HTML responses
 foreach($optionArray as $optionId => $optionValues) {
 	$option = $modx->getObject('vcOption', $optionId);
-	if ($option->get('outputsnippet') == '') {
-		$option->set('outputsnippet', 'vcOptionOutputCombo');
-	}
 	
 	array_unshift($optionValues, array(
 		'id' => 0,
 		'optionid' => $optionId,
 		'value' => 'Select value'
 	));
-	
-/*	if (isset($_GET['option'])) {
-		// Get selected value from current SKU
-		$selectedValue = $modx->getObject('vcProductOption', array(
-			'optionid' => $optionId,
-			'productid' => $vc->router['productId']
-		));
-		
-		$selectedValue = $selectedValue->get('valueid');
-	} else {
-		
-	}*/
+
 	$selectedValue = isset($scriptProperties['selectedValues'][$optionId]) ? $scriptProperties['selectedValues'][$optionId] == '' ? '0' : $scriptProperties['selectedValues'][$optionId] : '0';
-	
-	$snippet = $modx->getObject('modSnippet', $option->get('outputsnippet'));
-	if ($snippet == null) {
+
+	if ($option->get('outputsnippet') == '') {
 		$returnValue = '';
 	} else {
-		$returnValue = $modx->runSnippet($snippet->get('name'), array(
+		$returnValue = $modx->runSnippet($option->get('outputsnippet'), array(
 			'option' => $option->toArray(),
 			'values' => $optionValues,
 			'selectedValue' => $selectedValue

@@ -14,6 +14,7 @@ $xpdo_meta_map['vcCategory']= array (
     'customfields' => '',
     'pricechange' => 0,
     'pricepercent' => 0,
+    'tierprice' => '',
     'active' => 0,
   ),
   'fieldMeta' => 
@@ -96,6 +97,13 @@ $xpdo_meta_map['vcCategory']= array (
       'phptype' => 'boolean',
       'null' => false,
       'default' => 0,
+    ),
+    'tierprice' => 
+    array (
+      'dbtype' => 'text',
+      'phptype' => 'json',
+      'null' => false,
+      'default' => '',
     ),
     'active' => 
     array (

@@ -35,6 +35,9 @@ $vc->fireEvent('vcEventOrderStep5', '', array(
 	'order' => $order
 ));
 
+// Calculate order amount
+$vc->calculateOrderPrice($order);
+
 // Get theme configuration
 $scriptProperties['config'] = $modx->getOption('config', $scriptProperties, 'default');
 $config = $vc->getConfigFile($order->get('shopid'), 'orderStep5', null, array('config' => $scriptProperties['config']));

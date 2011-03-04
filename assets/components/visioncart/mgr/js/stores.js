@@ -96,7 +96,7 @@ vcCore.stores.options = new Ext.data.JsonStore({
     	prodId: 0
     },
     fields: [
-        'id', 'shopid', 'name', 'inputsnippet', 'outputsnippet', 'inputname', 'outputname'
+        'id', 'shopid', 'name', 'inputsnippet', 'outputsnippet'
     ]
 });
 
@@ -246,5 +246,31 @@ vcCore.stores.themes = new Ext.data.JsonStore({
     },
     fields: [
         'theme'
+    ]
+});
+ 
+vcCore.stores.categoryTierPricing = new Ext.data.JsonStore({
+    root: 'results',
+    idProperty: 'id',
+    url: vcCore.config.connectorUrl,
+    baseParams: {
+    	action: 'mgr/stores/categorytierpricing',
+    	categoryId: 0
+    },
+    fields: [
+        'quantity', 'amount', 'modifier'
+    ]
+});
+
+vcCore.stores.productTierPricing = new Ext.data.JsonStore({
+    root: 'results',
+    idProperty: 'id',
+    url: vcCore.config.connectorUrl,
+    baseParams: {
+    	action: 'mgr/stores/producttierpricing',
+    	productId: 0
+    },
+    fields: [
+        'quantity', 'amount', 'modifier'
     ]
 });

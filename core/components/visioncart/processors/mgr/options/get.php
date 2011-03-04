@@ -12,4 +12,28 @@ if ($option == null) {
 
 $optionArray = $option->toArray();
 
+if ($optionArray['inputsnippet'] != '') {
+	// Get the snippet
+	$snippet = $modx->getObject('modSnippet', array(
+		'name' => $optionArray['inputsnippet']
+	));
+	if ($snippet != null) {
+		$optionArray['inputsnippet'] = $snippet->get('id');
+	} else {
+		$optionArray['inputsnippet'] = '';
+	}	
+}
+
+if ($optionArray['outputsnippet'] != '') {
+	// Get the snippet
+	$snippet = $modx->getObject('modSnippet', array(
+		'name' => $optionArray['outputsnippet']
+	));
+	if ($snippet != null) {
+		$optionArray['outputsnippet'] = $snippet->get('id');
+	} else {
+		$optionArray['outputsnippet'] = '';
+	}	
+}
+
 return $modx->error->success('', $optionArray);

@@ -704,13 +704,12 @@ class VisionCart {
     	$taxAmounts = array();
     	$highestTax = null;
     	foreach($basket as $product) {
-    		
     		$productObject = $this->modx->getObject('vcProduct', $product['id']);	
     		
     		if ($productObject != null) {
     			$taxCategory = $productObject->getOne('TaxCategory');
     			
-    			if ($taxCategory != null) {
+    			if ($taxCategory != null) { 
     				// Check for highest tax
     				if ($highestTax == null) {
     					$highestTax = $taxCategory;	
@@ -729,7 +728,7 @@ class VisionCart {
 	    				$taxAmounts[$taxCategory->get('id')] = 0;	
 	    			}
 	    			
-	    			$productPrice = $this->calculateProductPrice($productObject, true);
+	    			$productPrice = $this->calculateProductPrice($product, true);
 	    			
 	    			$taxAmounts[$taxCategory->get('id')] += ((($productPrice['ex'] / 100) * $taxCategory->get('pricechange')) * (int) $product['quantity']);
     			}
@@ -2944,7 +2943,6 @@ class VisionCart {
 	    		
 	    		$productPrice = $this->calculateProductPrice($product, true);
 	    		$shippingPrice = $productObject->get('shippingprice');
-	    		
 	    		$amounts['totalProductsPriceIn'] += ($productPrice['in'] * $product['quantity']);
 	    		$amounts['totalProductsPriceEx'] += ($productPrice['ex'] * $product['quantity']);
 	    		$amounts['totalShippingPriceEx'] += ($shippingPrice * $product['quantity']);
@@ -3020,7 +3018,7 @@ class VisionCart {
 		    		}
 		    	}	
 	    	}
-	    	    	
+	    	    
 			$order->set('totalweight', $amounts['totalWeight']);	
 			$order->set('totalproductamountex', $amounts['totalProductsPriceEx']);
 			$order->set('totalproductamountin', $amounts['totalProductsPriceIn']);
@@ -3037,7 +3035,7 @@ class VisionCart {
 			$order->set('shippingcostsin', 0);
 			$order->set('shippingcostsex', 0);
 		}
-		
+
     	if ($savePrices) {
     		$order->save();
     	}
@@ -3061,6 +3059,11 @@ class VisionCart {
      * @return array The product price (from the cheapest category)
      */
     public function calculateProductPrice($product, $asArray=false) {
+    	$quantity = null;
+    	if (is_array($product) && isset($product['quantity'])) {
+    		$quantity = $product['quantity'];
+    	}
+    	
     	if (is_array($product) && isset($product['id'])) {
     		$product = $this->modx->getObject('vcProduct', $product['id']);
     	}
@@ -3085,11 +3088,45 @@ class VisionCart {
     		'product' => &$product,
     		'asArray' => $asArray
     	));
+    	
+    	$productHasTier = false;
+    	// Check if the product has a tier price, if it has we don't need to check the categories since it's overridden
+    	$tierPrice = $product->get('tierprice');
+		if ($tierPrice != '' && $quantity != null) {
+			if (is_array($tierPrice) && !empty($tierPrice)) {
+				$productHasTier = true;
+				foreach($tierPrice as $tier) {
+					if ($quantity >= $tier['quantity'] && $tier['quantity'] != 0) {
+						$activeTier = $tier;	
+					}
+				}
+			}
+		}
 
+		if (!$productHasTier) {
+			$tierArray = array();	
+		}
+		
     	foreach($productCategories as $productCategory) {
     		$category = $productCategory->getOne('Category');
     		if ($category->active != 1) {
     			continue;	
+    		}
+    		
+    		// If there's no active tier, it's possible the product should inherit one from the categories. Since we should
+    		// get the cheapest possible one we will create an array of tier prices here.
+    		if (!$productHasTier) {
+    			$tierPrice = $category->get('tierprice');	
+    			if (is_array($tierPrice) && !empty($tierPrice)) {
+    				foreach($tierPrice as $tier) {
+	    				if ($quantity >= $tier['quantity'] && $tier['quantity'] != 0) {
+				    		$tierArray[] = array(
+				    			'tier' => $tier,
+				    			'category' => $category
+				    		);
+	    				}
+    				}
+    			}
     		}
     		
     		// Check if it's by amount
@@ -3117,6 +3154,35 @@ class VisionCart {
     	    	
     	// Get the cheapest price
     	$cheapest = min($categoryPrices);
+    	
+    	if (!$productHasTier && isset($tierArray) && sizeof($tierArray) > 0) {
+    		$mostTierDiscount = 0;
+    		foreach($tierArray as $categoryTier) {
+    			// Calculate the discount from this tier
+	    		if ($categoryTier['tier']['modifier'] == 0) {
+	    			$tierDiscount = $categoryTier['tier']['amount'];
+	    		} else {
+	    			// Calculate percentage amount
+	    			$tierDiscount = ($cheapest / 100) * $categoryTier['tier']['amount'];
+	    		}
+
+	    		if ($tierDiscount > $mostTierDiscount) {
+	    			$mostTierDiscount = $tierDiscount;
+	    			$activeTier = $categoryTier['tier'];	
+	    		}
+    		}
+    	}
+    	    	
+    	// If there's an active tier, we should make it active
+    	if (isset($activeTier) && $quantity != null) {
+    		if ($activeTier['modifier'] == 0) {
+    			$cheapest = $cheapest - $activeTier['amount'];
+    		} else {
+    			// Calculate percentage amount
+    			$percentageAmount = ($cheapest / 100) * $activeTier['amount'];
+    			$cheapest = $cheapest - $percentageAmount;
+    		}
+    	}
     	
     	$product->set('price', $cheapest);
     	
@@ -3225,6 +3291,21 @@ class VisionCart {
     	if ($logHandle) {
     		fwrite($logHandle, '['.date('r').'] - ('.$level.') - '.$message.'. FILE: "'.$file.'" @ LINE: '.$line."\n");
     	}
+    }
+    
+    function _cmp($a, $b) {
+	    if ($a[$this->arrayKey] == $b[$this->arrayKey]) {
+	        return 0;
+	    }
+	    return ($a[$this->arrayKey] < $b[$this->arrayKey]) ? -1 : 1;
+    }
+    
+    function arrayMultiSort($array, $key) {
+    	$this->arrayKey = $key;
+    	
+    	usort($array, array($this, '_cmp'));
+    	
+    	return $array;
     }
     
     /**

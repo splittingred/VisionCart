@@ -410,13 +410,13 @@ var vcPageOptions = Ext.extend(Ext.Panel, {
 	            },
 	            {
 	                xtype: 'gridcolumn',
-	                dataIndex: 'inputname',
+	                dataIndex: 'inputsnippet',
 	                width: 150,
 	                header: 'Input snippet'
 	            },
 	            {
 	                xtype: 'gridcolumn',
-	                dataIndex: 'outputname',
+	                dataIndex: 'outputsnippet',
 	                width: 150,
 	                header: 'Output snippet'
 	            }
