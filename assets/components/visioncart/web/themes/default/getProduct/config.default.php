@@ -68,9 +68,10 @@ $params['tpl'] = '@CODE:<table width="100%">
 				<input type="hidden" name="product" value="[[+id]]" />
 				Quantity: 
 				<input type="text" name="quantity" value="1" size="4" /><br /><br />
+				[[!vcProductOptions]]
 				<input type="submit" value="Add to basket (post)" /> 
 			</form>
-			[[!vcProductOptions]]
+			
 		</td>
 	</tr>
 </table>';

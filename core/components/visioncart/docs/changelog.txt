@@ -1,4 +1,11 @@
 +--------------------+
+| Version 0.5.1 RC-1 |
++--------------------+
+#....	Fixed: Bug in ordernumber placeholder assignment
+#3992	Fixed: Display.price.ex shows price including VAT (vcGetProduct)
+#3990	Fixed: On quantity 0 the basket doesn't remove product from cart
+
++--------------------+
 | Version 0.5.0 RC-1 |
 +--------------------+
 #....	Added: Tierpricing for categories and products
