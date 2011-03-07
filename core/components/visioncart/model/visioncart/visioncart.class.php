@@ -3230,6 +3230,7 @@ class VisionCart {
     	
     	$output = $shopConfig['orderNumberFormat'];
     	$output = str_replace('[[+year]]', date('Y'), $output);
+    	$output = str_replace('[[+ordernumber]]', $orderNumber, $output);
     	$output = str_replace('[[+orderNumber]]', $orderNumber, $output);
     	
     	if ($updateLastOrderNumber) {

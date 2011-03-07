@@ -1,6 +1,11 @@
-#############
-# READ THIS #
-#############
++-----------------+
+| Read this first |
++-----------------+
+If you have BETA-2 or newer, just install this update over your current installation.
+
+Afterwards you can follow the templating tutorial: 
+http://rtfm.modx.com/display/ADDON/VisionCart.Templating
+
 If you have installed the first beta, uninstall it PRIOR to installing this version!
 Please check that you have removed:
 

@@ -106,9 +106,15 @@ if (in_array($scriptProperties['basketAction'], $methods)) {
 					continue;	
 				}
 				
-				$product['quantity'] = 0;
-				$currentBasket[$productId] = $product;
-				$currentBasket[$productId]['quantity'] = $quantity;
+				if ($quantity == 0) {
+					if (isset($currentBasket[$productId])) {
+						unset($currentBasket[$productId]);	
+					}
+				} else {
+					$product['quantity'] = 0;
+					$currentBasket[$productId] = $product;
+					$currentBasket[$productId]['quantity'] = $quantity;
+				}
 			}
 			
 			$basket->set('basket', $currentBasket);
