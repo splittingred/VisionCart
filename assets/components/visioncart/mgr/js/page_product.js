@@ -1476,7 +1476,7 @@ var vcPageProduct = Ext.extend(Ext.Panel, {
 				var tabPanel = Ext.getCmp('vc-product-tab');
 				
 				if(customTabs.length > 0) {
-					var count = 5;
+					var count = 6;
 					Ext.each(customTabs, function(item, key) {
 						item.autoLoad = {
 							url: vcCore.config.connectorUrl+'?action=mgr/products/getcustomtab&id='+item.id+'&tab='+count+'&prodid='+vcCore.getUrlVar('prodid'),

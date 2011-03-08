@@ -22,9 +22,9 @@ switch ($action) {
 		$mgr->createObjectContainer('vcModule');
 		
 		if (isset($options['send_email']) && $options['send_email'] == '1') {
-			$message = 'VisionCart 0.5 RC-1 was installed on '.date('d-m-Y H:i')."\n\n";
+			$message = 'VisionCart 0.5.1 RC-1 was installed on '.date('d-m-Y H:i')."\n\n";
 			$message .= 'Domain: '.$_SERVER['HTTP_HOST'];
-			mail('beta@visioncart.net', 'VisionCart 0.2 Beta-3 installed', $message);	
+			mail('beta@visioncart.net', 'VisionCart 0.5.1 RC-1 installed', $message);	
 		}
 		
 		if ($action == 'install') {

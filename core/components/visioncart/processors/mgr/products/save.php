@@ -7,7 +7,7 @@ $visionCart = $modx->visioncart;
 $optionArray = json_decode($_REQUEST['formData'], true);
 $product = $modx->getObject('vcProduct', $optionArray['id']);
 
-$visionCart->fireEvent('vcEventSaveProduct', 'before', array(
+$visionCart->fireEvent('vcEventProduct', 'before', array(
 	'vcAction' => 'process',
 	'formData' => $optionArray,
 	'productId' => $optionArray['id'],
@@ -76,7 +76,7 @@ if ($_REQUEST['sku'] != '') {
 	}
 }
 
-$visionCart->fireEvent('vcEventSaveProduct', 'after', array(
+$visionCart->fireEvent('vcEventProduct', 'after', array(
 	'vcAction' => 'process',
 	'formData' => $optionArray,
 	'productId' => $optionArray['id'],

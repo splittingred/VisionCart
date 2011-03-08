@@ -2938,7 +2938,7 @@ class VisionCart {
 	    			$highestTax = $taxCategory;	
 	    		}
 	    		
-	    		$productPrice = $this->calculateProductPrice($product, true);
+	    		$productPrice = $this->calculateProductPrice($productObject, true);
 	    		$shippingPrice = $productObject->get('shippingprice');
 	    		$amounts['totalProductsPriceIn'] += ($productPrice['in'] * $product['quantity']);
 	    		$amounts['totalProductsPriceEx'] += ($productPrice['ex'] * $product['quantity']);
@@ -3055,13 +3055,39 @@ class VisionCart {
      * @param bool $asArray Return multidimensional array containing more info
      * @return array The product price (from the cheapest category)
      */
-    public function calculateProductPrice($product, $asArray=false) {
+    public function calculateProductPrice($product, $asArray=false, $cached=true) {
+    	static $productPrices;
+    	
+    	if (!isset($productPrices)) {
+    		$productPrices = array();	
+    	}
+    	
     	$quantity = null;
+    	$originalProductArray = $product;
     	if (is_array($product) && isset($product['quantity'])) {
     		$quantity = $product['quantity'];
+    		
+    		// Check for static prices
+    		if (isset($productPrices['quantity'][$product['id']][$quantity])) {
+    			if ($asArray) {
+    				return $productPrices['quantity'][$product['id']][$quantity]['asArray'];	
+    			} else {
+    				return $productPrices['quantity'][$product['id']][$quantity]['normal'];	
+    			}
+    		}
     	}
     	
     	if (is_array($product) && isset($product['id'])) {
+    		// Check for static prices
+    		if (isset($productPrices[$product['id']])) {
+     			if ($asArray) {
+    				return $productPrices[$product['id']]['asArray'];	
+    			} else {
+    				return $productPrices[$product['id']]['normal'];	
+    			}
+    		}
+    		
+    		// Fetch product object
     		$product = $this->modx->getObject('vcProduct', $product['id']);
     	}
     	
@@ -3069,6 +3095,15 @@ class VisionCart {
     		return false;	
     	}
     	
+    	// Check for static prices
+		if (isset($productPrices[$product->get('id')])) {
+ 			if ($asArray) {
+				return $productPrices[$product->get('id')]['asArray'];	
+			} else {
+				return $productPrices[$product->get('id')]['normal'];	
+			}
+		}
+		
     	if ($asArray) {
     		$productArray = array();
     	}	
@@ -3083,7 +3118,8 @@ class VisionCart {
     	
     	$this->fireEvent('vcCalculateProductPrice', 'onBeforeCalculate', array(
     		'product' => &$product,
-    		'asArray' => $asArray
+    		'asArray' => $asArray,
+    		'originalProduct' => $originalProductArray,
     	));
     	
     	$productHasTier = false;
@@ -3185,6 +3221,7 @@ class VisionCart {
     	
     	$this->fireEvent('vcCalculateProductPrice', 'onAfterCalculate', array(
     		'product' => &$product,
+    		'originalProduct' => $originalProductArray,
     		'asArray' => $asArray
     	));
 
@@ -3192,6 +3229,20 @@ class VisionCart {
     	$taxCategory = $product->getOne('TaxCategory');
     	$taxAmount = ($product->get('price') / 100) * abs($taxCategory->get('pricechange'));
     	$totalAmount = number_format(($product->get('price') + $taxAmount), 2, '.', '');
+    	
+    	if (isset($quantity)) {
+    		$productPrices['quantity'][$product->get('id')][$quantity]['asArray'] = array(
+    			'ex' => $product->get('price'),
+    			'in' => $totalAmount
+    		);
+    		$productPrices['quantity'][$product->get('id')][$quantity]['normal'] = $totalAmount;
+    	} else {
+    		$productPrices[$product->get('id')]['asArray'] = array(
+    			'ex' => $product->get('price'),
+    			'in' => $totalAmount
+    		);
+    		$productPrices[$product->get('id')]['normal'] = $totalAmount;
+    	}
     	
     	if ($asArray) {
     		$productArray['ex'] = $product->get('price');

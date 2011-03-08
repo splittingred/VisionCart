@@ -53,6 +53,11 @@ if (in_array($scriptProperties['basketAction'], $methods)) {
 	if ($basket == null) {
 		$basket = $vc->getBasket();
 	}
+
+	$vc->fireEvent('vcBasketProcess', 'before', array(
+		'basket' => &$basket,
+		'basketAction' => $scriptProperties['basketAction']
+	));
 	
 	if ($scriptProperties['products'] == '' && $scriptProperties['product'] == '') {
 		$scriptProperties['products'] = false;
@@ -163,7 +168,10 @@ if (in_array($scriptProperties['basketAction'], $methods)) {
 	// Update order
 	$vc->calculateOrderPrice($basket);
 	
-	$basket->save();
+	$vc->fireEvent('vcBasketProcess', 'after', array(
+		'basket' => &$basket,
+		'basketAction' => $scriptProperties['basketAction']
+	));
 } elseif ($scriptProperties['basketAction'] != '') {
 	return $modx->error->failure('Method does not exist');	
 }
@@ -201,6 +209,7 @@ switch($scriptProperties['return']) {
 		} else {
 			$innerChunk = '';
 			foreach($basketArray as $product) {
+				$product['display']['price'] = $vc->calculateProductPrice($product, true);
 				$innerChunk .= $vc->parseChunk($scriptProperties['rowTpl'], $product);
 			}	
 			

@@ -40,7 +40,6 @@ if ($scriptProperties['category'] != 0) {
 }
 
 // Convert prices and so on for display purposes, leaving the database values intact for re-usage
-$product->set('price', $vc->calculateProductPrice($product));
 $product->set('display', array(
 	'price' => $vc->calculateProductPrice($product, true),
 	'shippingprice' => $vc->money($product->get('shippingprice'), array('shopId' => $product->get('shopid')))
